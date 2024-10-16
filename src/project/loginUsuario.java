@@ -3,8 +3,8 @@ package renunciosproject;
 import javax.swing.*;
 import java.awt.*;
 
-public class landingPage extends JPanel {
-    public landingPage() {
+public class loginUsuario extends JPanel {
+    public loginUsuario() {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize(); // Obtener el tamaño de la pantalla
         setPreferredSize(new Dimension(screenSize.width, screenSize.height)); // Establecer el tamaño preferido del panel
 
@@ -47,10 +47,6 @@ public class landingPage extends JPanel {
         
         JTextField sectorField = new JTextField(20);
         formPanel.add(sectorField, gbc);
-        
-        // Boton para registrarse si el usuario no tiene una cuenta
-        JButton signUp = new JButton("No tienes una cuenta?");
-        formPanel.add(signUp, gbc);
 
         add(formPanel, BorderLayout.CENTER); // Añadir el formulario al panel principal
 
