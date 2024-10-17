@@ -3,16 +3,16 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class registerAdmin extends JPanel {
+public class loginAdmin extends JPanel implements ActionListener{
 	
-	public registerAdmin() {
+	public loginAdmin() {
     	Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize(); // Obtener el tamaño de la pantalla
         setPreferredSize(new Dimension(screenSize.width, screenSize.height)); // Establecer el tamaño preferido del panel
 
         setLayout(new BorderLayout()); // Configurar el layout del panel
 
         // Configurar los diferentes componentes
-        JLabel label = new JLabel("Registrate como Administrador", JLabel.CENTER);
+        JLabel label = new JLabel("Bienvenido a Inicio de sessión", JLabel.CENTER);
         label.setFont(new Font("Arial", Font.BOLD, 30));
         add(label, BorderLayout.NORTH);
 
@@ -30,7 +30,7 @@ public class registerAdmin extends JPanel {
         loginADM.addActionListener(new ActionListener() {
         	// Se llama al metodo irSignUp que cambia la pagina a la de registro
         	public void actionPerformed(ActionEvent e) {
-        		//loginADM();
+        		loginADM();
 			}
         });
         
@@ -43,7 +43,7 @@ public class registerAdmin extends JPanel {
         backButton.addActionListener(new ActionListener() {
         	// Se llama al metodo irSignUp que cambia la pagina a la de registro
         	public void actionPerformed(ActionEvent e) {
-        		//volver();
+        		volver();
 			}
         });
         
@@ -54,12 +54,46 @@ public class registerAdmin extends JPanel {
         registerBttn.addActionListener(new ActionListener() {
         	// Se llama al metodo irSignUp que cambia la pagina a la de registro
         	public void actionPerformed(ActionEvent e) {
-        		//signupADM();
+        		signupADM();
 			}
         });
         
         formPanel.add(registerBttn, gbc);
     }
+
+	// Metodo para iniciar sessión
+	public void loginADM() {
+		//Mostrar mensaje de login exitoso
+		JOptionPane.showMessageDialog(null, "Inicio de sessión exitoso");
+		
+		JFrame marco = (JFrame) SwingUtilities.getWindowAncestor(this);
+		marco.remove(this);
+		/*--->Modificar esto*/marco.getContentPane().add(new loginAdmin());
+		marco.setVisible(true);
+	}
+	
+	// Metodo para enlazar con el archivo de registro para administradores
+	public void signupADM() {
+		// Cambiar al panel correspondiente		
+		JFrame marco = (JFrame) SwingUtilities.getWindowAncestor(this);
+		marco.remove(this);
+		marco.getContentPane().add(new registerAdmin());
+		marco.setVisible(true);
+	}
+	
+	// Metodo para volver al menú
+	public void volver() {
+		JFrame marco = (JFrame) SwingUtilities.getWindowAncestor(this);
+		marco.remove(this);
+		marco.getContentPane().add(new loginUser());
+		marco.setVisible(true);
+	}
+	
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
 	
 
 }

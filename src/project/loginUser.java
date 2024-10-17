@@ -3,16 +3,15 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class registerAdmin extends JPanel {
-	
-	public registerAdmin() {
+public class loginUser extends JPanel implements ActionListener{
+	public loginUser() {
     	Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize(); // Obtener el tamaño de la pantalla
         setPreferredSize(new Dimension(screenSize.width, screenSize.height)); // Establecer el tamaño preferido del panel
 
         setLayout(new BorderLayout()); // Configurar el layout del panel
 
         // Configurar los diferentes componentes
-        JLabel label = new JLabel("Registrate como Administrador", JLabel.CENTER);
+        JLabel label = new JLabel("Bienvenido a Inicio de sessión", JLabel.CENTER);
         label.setFont(new Font("Arial", Font.BOLD, 30));
         add(label, BorderLayout.NORTH);
 
@@ -26,40 +25,54 @@ public class registerAdmin extends JPanel {
         gbc.gridy = GridBagConstraints.RELATIVE; // Configurar el layout del formulario
         gbc.fill = GridBagConstraints.HORIZONTAL; // Ocupa toda la fila horizontalmente
         
-        JButton loginADM = new JButton("Iniciar sessión");
-        loginADM.addActionListener(new ActionListener() {
+        
+        // Boton para ir al login si el usuario es administrador
+        JButton signUpADM = new JButton("Soy un administrador");
+        signUpADM.addActionListener(new ActionListener() {
         	// Se llama al metodo irSignUp que cambia la pagina a la de registro
         	public void actionPerformed(ActionEvent e) {
-        		//loginADM();
+        		SignUpADM();
 			}
         });
         
-        formPanel.add(loginADM, gbc);
+        formPanel.add(signUpADM, gbc);
+        
+        JButton signUpCLI = new JButton("Soy un cliente");
+        signUpCLI.addActionListener(new ActionListener() {
+        	// Se llama al metodo irSignUp que cambia la pagina a la de registro
+        	public void actionPerformed(ActionEvent e) {
+        		SignUpUSR();
+			}
+        });
+        
+        formPanel.add(signUpCLI, gbc);
 
         add(formPanel, BorderLayout.CENTER); // Añadir el formulario al panel principal
 
-        // Boton que vuelve al menu anterior
-        JButton backButton = new JButton("Volver atras");
-        backButton.addActionListener(new ActionListener() {
-        	// Se llama al metodo irSignUp que cambia la pagina a la de registro
-        	public void actionPerformed(ActionEvent e) {
-        		//volver();
-			}
-        });
-        
-        formPanel.add(backButton, gbc);
-        
-        // Boton para crear una cuenta
-        JButton registerBttn = new JButton("No tengo una cuenta");
-        registerBttn.addActionListener(new ActionListener() {
-        	// Se llama al metodo irSignUp que cambia la pagina a la de registro
-        	public void actionPerformed(ActionEvent e) {
-        		//signupADM();
-			}
-        });
-        
-        formPanel.add(registerBttn, gbc);
+        JButton loginButton = new JButton("Iniciar sesión");
+        add(loginButton, BorderLayout.SOUTH);
+    
     }
-	
 
+	// Metodo para ir al inicio de session de administrador
+    public void SignUpADM() {
+		JFrame marco = (JFrame) SwingUtilities.getWindowAncestor(this);
+		marco.remove(this);
+		marco.getContentPane().add(new loginAdmin());
+		marco.setVisible(true);
+	}
+    
+    // Metodo para ir al inicio de session de cliente
+    public void SignUpUSR() {
+		JFrame marco = (JFrame) SwingUtilities.getWindowAncestor(this);
+		marco.remove(this);
+		marco.getContentPane().add(new loginUser());
+		marco.setVisible(true);
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
 }
