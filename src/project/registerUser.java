@@ -2,10 +2,28 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
 public class registerUser extends JPanel {
+	private Connection con;
+	private JTextField username;
+    private JTextField passwd;
+    private String role;
 	
 	public registerUser() {
+		// Conectar a la base de datos al entrar al panel
+        con = bbdd.conectarBD();
+        
+        if (con != null) {
+            System.out.println("Conexión exitosa a la base de datos.");
+            // Aquí puedes realizar cualquier acción adicional que necesites con la conexión
+        } else {
+            JOptionPane.showMessageDialog(this, "Error al conectar a la base de datos.");
+            // Aquí puedes manejar el error de conexión, como mostrar un mensaje de error al usuario
+        }
+		
     	Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize(); // Obtener el tamaño de la pantalla
         setPreferredSize(new Dimension(screenSize.width, screenSize.height)); // Establecer el tamaño preferido del panel
 
@@ -30,29 +48,29 @@ public class registerUser extends JPanel {
         usernameLbl.setFont(new Font("Arial", Font.BOLD, 18));
         formPanel.add(usernameLbl, gbc);
         
-        JTextField username = new JTextField();
+        username = new JTextField(20);
         formPanel.add(username, gbc);
         
         JLabel passwdLbl = new JLabel("Contraseña");
         passwdLbl.setFont(new Font("Arial", Font.BOLD, 18));
         formPanel.add(passwdLbl, gbc);
         
-        JTextField passwd = new JTextField();
+        passwd = new JTextField();
         formPanel.add(passwd, gbc);
         
-        JLabel roleLbl = new JLabel("Rol");
+        /*JLabel roleLbl = new JLabel("Rol");
         roleLbl.setFont(new Font("Arial", Font.BOLD, 18));
         formPanel.add(roleLbl, gbc);
         
-        JTextField role = new JTextField();
-        formPanel.add(role, gbc);
+        role = new JTextField();
+        formPanel.add(role, gbc);*/
         
         
         JButton loginADM = new JButton("Registrarme");
         loginADM.addActionListener(new ActionListener() {
         	// Se llama al metodo irSignUp que cambia la pagina a la de registro
         	public void actionPerformed(ActionEvent e) {
-        		//loginADM();
+        		insertarUsuario();
 			}
         });
         
@@ -79,4 +97,23 @@ public class registerUser extends JPanel {
 			marco.getContentPane().add(new loginAdmin());
 			marco.setVisible(true);
 		}
+		
+		// Método para insertar un nuevo usuario en la base de datos
+	    public boolean insertarUsuario() {
+			String usuario = username.getText().trim();
+            String contraseña = passwd.getText().trim();
+            role = "Cliente";
+            
+	        String query = "INSERT INTO USUARI(USUARI, PW, ROL) VALUES (?,?,?)";
+	        try (PreparedStatement statement = con.prepareStatement(query)) {
+	            statement.setString(1, usuario);
+	            statement.setString(2, contraseña);
+	            statement.setString(3, role);
+	            int rowCount = statement.executeUpdate();
+	            return rowCount > 0;
+	        } catch (SQLException e) {
+	            e.printStackTrace();
+	        }
+	        return false;
+	    }
 }
