@@ -3,16 +3,16 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class registerAdmin extends JPanel {
+public class registerUser extends JPanel {
 	
-	public registerAdmin() {
+	public registerUser() {
     	Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize(); // Obtener el tamaño de la pantalla
         setPreferredSize(new Dimension(screenSize.width, screenSize.height)); // Establecer el tamaño preferido del panel
 
         setLayout(new BorderLayout()); // Configurar el layout del panel
 
         // Configurar los diferentes componentes
-        JLabel label = new JLabel("Registrate como Administrador", JLabel.CENTER);
+        JLabel label = new JLabel("Registrate como Cliente", JLabel.CENTER);
         label.setFont(new Font("Arial", Font.BOLD, 30));
         add(label, BorderLayout.NORTH);
 
@@ -26,29 +26,26 @@ public class registerAdmin extends JPanel {
         gbc.gridy = GridBagConstraints.RELATIVE; // Configurar el layout del formulario
         gbc.fill = GridBagConstraints.HORIZONTAL; // Ocupa toda la fila horizontalmente
         
-        JLabel cifCompany = new JLabel("CIF de la empresa");
-        cifCompany.setFont(new Font("Arial", Font.BOLD, 20));
-        formPanel.add(cifCompany, gbc);
+        JLabel usernameLbl = new JLabel("Nombre de usuario");
+        usernameLbl.setFont(new Font("Arial", Font.BOLD, 18));
+        formPanel.add(usernameLbl, gbc);
         
-        JTextField cif = new JTextField();
-        cif.setBounds(10,10,100,30);
-        formPanel.add(cif, gbc);
+        JTextField username = new JTextField();
+        formPanel.add(username, gbc);
         
-        JLabel nameCompany = new JLabel("Nombre de la empresa");
-        nameCompany.setFont(new Font("Arial", Font.BOLD, 20));
-        formPanel.add(nameCompany, gbc);
+        JLabel passwdLbl = new JLabel("Contraseña");
+        passwdLbl.setFont(new Font("Arial", Font.BOLD, 18));
+        formPanel.add(passwdLbl, gbc);
         
-        JTextField name = new JTextField();
-        name.setBounds(10,10,100,30);
-        formPanel.add(name, gbc);
+        JTextField passwd = new JTextField();
+        formPanel.add(passwd, gbc);
         
-        JLabel sectorCompany = new JLabel("Sector de la empresa");
-        sectorCompany.setFont(new Font("Arial", Font.BOLD, 20));
-        formPanel.add(sectorCompany, gbc);
+        JLabel roleLbl = new JLabel("Rol");
+        roleLbl.setFont(new Font("Arial", Font.BOLD, 18));
+        formPanel.add(roleLbl, gbc);
         
-        JTextField sector = new JTextField();
-        sector.setBounds(10,10,100,30);
-        formPanel.add(sector, gbc);
+        JTextField role = new JTextField();
+        formPanel.add(role, gbc);
         
         
         JButton loginADM = new JButton("Registrarme");

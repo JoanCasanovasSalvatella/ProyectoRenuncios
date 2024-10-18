@@ -11,13 +11,14 @@ public class loginUser extends JPanel implements ActionListener{
         setLayout(new BorderLayout()); // Configurar el layout del panel
 
         // Configurar los diferentes componentes
-        JLabel label = new JLabel("Bienvenido a Inicio de sessión", JLabel.CENTER);
+        JLabel label = new JLabel("Bienvenido a RENUNCIOS", JLabel.CENTER);
         label.setFont(new Font("Arial", Font.BOLD, 30));
         add(label, BorderLayout.NORTH);
 
         // Crear un panel para el formulario
         JPanel formPanel = new JPanel();
         formPanel.setLayout(new GridBagLayout()); // Utilizar GridBagLayout para centrar los elementos
+        formPanel.setBackground(Color.cyan);
         
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 10, 10, 10); // Añadir espacio entre los componentes
@@ -29,7 +30,8 @@ public class loginUser extends JPanel implements ActionListener{
         // Boton para ir al login si el usuario es administrador
         JButton signUpADM = new JButton("Soy un administrador");
         signUpADM.addActionListener(new ActionListener() {
-        	// Se llama al metodo irSignUp que cambia la pagina a la de registro
+        	
+        	// Se llama al metodo que cambia la pagina a la de registro
         	public void actionPerformed(ActionEvent e) {
         		SignUpADM();
 			}
@@ -39,7 +41,8 @@ public class loginUser extends JPanel implements ActionListener{
         
         JButton signUpCLI = new JButton("Soy un cliente");
         signUpCLI.addActionListener(new ActionListener() {
-        	// Se llama al metodo irSignUp que cambia la pagina a la de registro
+        	
+        	// Se llama al metodo que cambia la pagina a la de registro
         	public void actionPerformed(ActionEvent e) {
         		SignUpUSR();
 			}
@@ -49,9 +52,6 @@ public class loginUser extends JPanel implements ActionListener{
 
         add(formPanel, BorderLayout.CENTER); // Añadir el formulario al panel principal
 
-        JButton loginButton = new JButton("Iniciar sesión");
-        add(loginButton, BorderLayout.SOUTH);
-    
     }
 
 	// Metodo para ir al inicio de session de administrador
@@ -64,10 +64,10 @@ public class loginUser extends JPanel implements ActionListener{
     
     // Metodo para ir al inicio de session de cliente
     public void SignUpUSR() {
-		JFrame marco = (JFrame) SwingUtilities.getWindowAncestor(this);
-		marco.remove(this);
-		marco.getContentPane().add(new loginUser());
-		marco.setVisible(true);
+		JFrame marcoB = (JFrame) SwingUtilities.getWindowAncestor(this);
+		marcoB.remove(this);
+		marcoB.getContentPane().add(new loginCliente());
+		marcoB.setVisible(true);
 	}
 
 	@Override
