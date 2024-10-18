@@ -26,6 +26,20 @@ public class loginAdmin extends JPanel implements ActionListener{
         gbc.gridy = GridBagConstraints.RELATIVE; // Configurar el layout del formulario
         gbc.fill = GridBagConstraints.HORIZONTAL; // Ocupa toda la fila horizontalmente
         
+        JLabel usernameLbl = new JLabel("Nombre de usuario");
+        usernameLbl.setFont(new Font("Arial", Font.BOLD, 18));
+        formPanel.add(usernameLbl, gbc);
+        
+        JTextField username = new JTextField();
+        formPanel.add(username, gbc);
+        
+        JLabel passwdLbl = new JLabel("Contraseña");
+        passwdLbl.setFont(new Font("Arial", Font.BOLD, 18));
+        formPanel.add(passwdLbl, gbc);
+        
+        JTextField passwd = new JTextField();
+        formPanel.add(passwd, gbc);
+        
         JButton loginADM = new JButton("Iniciar sessión");
         loginADM.addActionListener(new ActionListener() {
         	// Se llama al metodo irSignUp que cambia la pagina a la de registro
