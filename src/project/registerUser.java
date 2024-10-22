@@ -58,13 +58,6 @@ public class registerUser extends JPanel {
         passwd = new JTextField();
         formPanel.add(passwd, gbc);
         
-        /*JLabel roleLbl = new JLabel("Rol");
-        roleLbl.setFont(new Font("Arial", Font.BOLD, 18));
-        formPanel.add(roleLbl, gbc);
-        
-        role = new JTextField();
-        formPanel.add(role, gbc);*/
-        
         
         JButton loginADM = new JButton("Registrarme");
         loginADM.addActionListener(new ActionListener() {
@@ -110,6 +103,9 @@ public class registerUser extends JPanel {
 	            statement.setString(2, contraseña);
 	            statement.setString(3, role);
 	            int rowCount = statement.executeUpdate();
+	            // Mostrar un mensaje conforme se ha insertado correctamente
+	            JOptionPane.showMessageDialog(null, "Usuario registrado exitosamente");
+	            
 	            return rowCount > 0;
 	        } catch (SQLException e) {
 	            e.printStackTrace();
