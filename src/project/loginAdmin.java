@@ -2,17 +2,25 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class loginAdmin extends JPanel implements ActionListener{
+	private Connection con;
+	private JTextField username;
+	private JTextField passwd;
 	
 	public loginAdmin() {
+		con = bbdd.conectarBD();
     	Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize(); // Obtener el tamaño de la pantalla
         setPreferredSize(new Dimension(screenSize.width, screenSize.height)); // Establecer el tamaño preferido del panel
 
         setLayout(new BorderLayout()); // Configurar el layout del panel
 
         // Configurar los diferentes componentes
-        JLabel label = new JLabel("Bienvenido a Inicio de sessión", JLabel.CENTER);
+        JLabel label = new JLabel("Bienvenido a Inicio de sessión como Administrador", JLabel.CENTER);
         label.setFont(new Font("Arial", Font.BOLD, 30));
         add(label, BorderLayout.NORTH);
 
@@ -30,21 +38,21 @@ public class loginAdmin extends JPanel implements ActionListener{
         usernameLbl.setFont(new Font("Arial", Font.BOLD, 18));
         formPanel.add(usernameLbl, gbc);
         
-        JTextField username = new JTextField();
+        username = new JTextField();
         formPanel.add(username, gbc);
         
         JLabel passwdLbl = new JLabel("Contraseña");
         passwdLbl.setFont(new Font("Arial", Font.BOLD, 18));
         formPanel.add(passwdLbl, gbc);
         
-        JTextField passwd = new JTextField();
+        passwd = new JTextField();
         formPanel.add(passwd, gbc);
         
         JButton loginADM = new JButton("Iniciar sessión");
         loginADM.addActionListener(new ActionListener() {
         	// Se llama al metodo irSignUp que cambia la pagina a la de registro
         	public void actionPerformed(ActionEvent e) {
-        		loginADM();
+        		validarUsuario();
 			}
         });
         
@@ -77,8 +85,6 @@ public class loginAdmin extends JPanel implements ActionListener{
 
 	// Metodo para iniciar sessión
 	public void loginADM() {
-		//Mostrar mensaje de login exitoso
-		JOptionPane.showMessageDialog(null, "Inicio de sessión exitoso");
 		
 		JFrame marco = (JFrame) SwingUtilities.getWindowAncestor(this);
 		marco.remove(this);
@@ -102,6 +108,32 @@ public class loginAdmin extends JPanel implements ActionListener{
 		marco.getContentPane().add(new loginUser());
 		marco.setVisible(true);
 	}
+	
+	// Método para validar el usuario en la base de datos
+    private boolean validarUsuario() {
+    	String usuario = username.getText().trim();
+        String contraseña = passwd.getText().trim();
+    	
+        String query = "SELECT USUARI FROM USUARI WHERE USUARI = ? AND PW = ?";
+        
+        try (PreparedStatement statement = con.prepareStatement(query)) {
+            statement.setString(1, usuario);
+            statement.setString(2, contraseña);
+            ResultSet resultSet = statement.executeQuery();
+
+            if (resultSet.next()) {
+            	JOptionPane.showMessageDialog(this, "Inicio de session exitoso");
+                return true; // Devuelve true si hay al menos una fila
+            } else {
+                JOptionPane.showMessageDialog(this, "No existe el usuario");
+                return false;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error inesperado: " + e.getMessage());
+            return false; // En caso de error, devuelve falso
+        }
+    }
 	
 	@Override
 	public void actionPerformed(ActionEvent e) {
