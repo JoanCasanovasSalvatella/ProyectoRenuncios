@@ -123,6 +123,13 @@ public class loginAdmin extends JPanel implements ActionListener{
 
             if (resultSet.next()) {
             	JOptionPane.showMessageDialog(this, "Inicio de session exitoso");
+            	
+            	// Ir al panel de usuario
+            	JFrame marco = (JFrame) SwingUtilities.getWindowAncestor(this);
+        		marco.remove(this);
+        		marco.getContentPane().add(new mainUser());
+        		marco.setVisible(true);
+            	
                 return true; // Devuelve true si hay al menos una fila
             } else {
                 JOptionPane.showMessageDialog(this, "No existe el usuario");
@@ -135,6 +142,11 @@ public class loginAdmin extends JPanel implements ActionListener{
         }
     }
 	
+    public String getUsername() {
+    	String usuario = username.getText().trim();
+    	return usuario;
+    }
+    
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
