@@ -1,4 +1,5 @@
 import javax.swing.*;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -25,6 +26,9 @@ public class loginUser extends JPanel implements ActionListener{
         gbc.gridx = 0;
         gbc.gridy = GridBagConstraints.RELATIVE; // Configurar el layout del formulario
         gbc.fill = GridBagConstraints.HORIZONTAL; // Ocupa toda la fila horizontalmente
+        
+        // Logo de la empresa
+        
         
         
         // Boton para ir al login si el usuario es administrador
@@ -69,10 +73,12 @@ public class loginUser extends JPanel implements ActionListener{
 		marcoB.getContentPane().add(new loginCliente());
 		marcoB.setVisible(true);
 	}
+    
+    
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		// TODO Auto-generated method stub
+		
 		
 	}
 }

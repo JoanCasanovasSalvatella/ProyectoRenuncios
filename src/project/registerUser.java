@@ -1,4 +1,6 @@
+
 import javax.swing.*;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -87,7 +89,7 @@ public class registerUser extends JPanel {
 		public void volver() {
 			JFrame marco = (JFrame) SwingUtilities.getWindowAncestor(this);
 			marco.remove(this);
-			marco.getContentPane().add(new loginAdmin());
+			marco.getContentPane().add(new loginCliente());
 			marco.setVisible(true);
 		}
 		

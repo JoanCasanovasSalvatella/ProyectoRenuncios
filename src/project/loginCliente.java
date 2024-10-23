@@ -1,4 +1,6 @@
+
 import javax.swing.*;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -41,7 +43,6 @@ public class loginCliente extends JPanel implements ActionListener{
         formPanel.add(passwd, gbc);
         
         JButton loginADM = new JButton("Iniciar sessión");
-        loginADM.setIcon(new ImageIcon("img/bt1.gif"));
         loginADM.addActionListener(new ActionListener() {
         	// Se llama al metodo irSignUp que cambia la pagina a la de registro
         	public void actionPerformed(ActionEvent e) {
@@ -83,7 +84,7 @@ public class loginCliente extends JPanel implements ActionListener{
 		
 		JFrame marco = (JFrame) SwingUtilities.getWindowAncestor(this);
 		marco.remove(this);
-		/*--->Modificar esto*/marco.getContentPane().add(new loginCliente());
+		marco.getContentPane().add(new loginCliente());
 		marco.setVisible(true);
 	}
 	

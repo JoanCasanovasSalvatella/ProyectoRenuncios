@@ -85,10 +85,9 @@ public class loginAdmin extends JPanel implements ActionListener{
 
 	// Metodo para iniciar sessión
 	public void loginADM() {
-		
 		JFrame marco = (JFrame) SwingUtilities.getWindowAncestor(this);
 		marco.remove(this);
-		/*--->Modificar esto*/marco.getContentPane().add(new loginAdmin());
+		marco.getContentPane().add(new loginAdmin());
 		marco.setVisible(true);
 	}
 	
