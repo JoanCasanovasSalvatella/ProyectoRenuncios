@@ -12,8 +12,8 @@ import java.sql.Statement;
 		private static final String USER = "DW2425_G3_JOA_RAF_REN";
 		private static final String PWD = "A12345678";
 		// Si estáis desde casa, la url será oracle.ilerna.com y no 192.168.3.26
-		private static final String URL = "jdbc:oracle:thin:@192.168.3.26:1521/XEPDB1";
-		// Descomentar esta línea si estais desde casa -->private static final String URL = "jdbc:oracle:thin:@192.168.3.26:1521:xe";
+		//private static final String URL = "jdbc:oracle:thin:@192.168.3.26:1521/XEPDB1";
+		/*Descomentar esta línea si estais desde casa*/ private static final String URL = "jdbc:oracle:thin:@oracle.ilerna.com:1521:/XEPDB1";
 	
 	// Función para conectarse a la base de datos
 	public static Connection conectarBD() {

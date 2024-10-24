@@ -11,6 +11,7 @@ import java.sql.SQLException;
 public class mainUser extends JPanel {
 	private Connection con;
 	
+	// Pagina de perfil del usuario
 	public mainUser() {
     	Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize(); // Obtener el tamaño de la pantalla
         setPreferredSize(new Dimension(screenSize.width, screenSize.height)); // Establecer el tamaño preferido del panel
@@ -43,18 +44,18 @@ public class mainUser extends JPanel {
 			}
         });
         
-        // Boton que vuelve al menu anterior
+        // Boton para añadir un servicio
         JButton solicitar = new JButton("Solicitar un servicio");
-        backButton.addActionListener(new ActionListener() {
+        formPanel.add(solicitar);
+        solicitar.addActionListener(new ActionListener() {
         	// Se llama al metodo irSignUp que cambia la pagina a la de registro
         	public void actionPerformed(ActionEvent e) {
-        		volver();
+        		addService(e);
 			}
         });
         
         JLabel myServices = new JLabel("Servicios activos");
         // Llamar al metodo que selecciona todas las columnas de un usuario
-        
         
         formPanel.add(backButton, gbc);
     }
@@ -67,11 +68,9 @@ public class mainUser extends JPanel {
 			marco.setVisible(true);
 		}
 		
-		public void addService() {
-			JFrame marco = (JFrame) SwingUtilities.getWindowAncestor(this);
-			marco.remove(this);
-			marco.getContentPane().add(new loginAdmin());
-			marco.setVisible(true);
+		public void addService(ActionEvent e) {
+			String state = JOptionPane.showInputDialog("Estado:");
+			String CIF = JOptionPane.showInputDialog("CIF:");
 		}
 		
 		public boolean getService() {

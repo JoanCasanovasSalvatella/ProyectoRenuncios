@@ -84,7 +84,7 @@ public class loginCliente extends JPanel implements ActionListener{
 		
 		JFrame marco = (JFrame) SwingUtilities.getWindowAncestor(this);
 		marco.remove(this);
-		marco.getContentPane().add(new loginCliente());
+		marco.getContentPane().add(new mainUser());
 		marco.setVisible(true);
 	}
 	
@@ -101,7 +101,7 @@ public class loginCliente extends JPanel implements ActionListener{
 	public void volver() {
 		JFrame marco = (JFrame) SwingUtilities.getWindowAncestor(this);
 		marco.remove(this);
-		marco.getContentPane().add(new loginUser());
+		marco.getContentPane().add(new login());
 		marco.setVisible(true);
 	}
 	

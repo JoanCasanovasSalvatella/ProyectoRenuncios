@@ -104,7 +104,7 @@ public class loginAdmin extends JPanel implements ActionListener{
 	public void volver() {
 		JFrame marco = (JFrame) SwingUtilities.getWindowAncestor(this);
 		marco.remove(this);
-		marco.getContentPane().add(new loginUser());
+		marco.getContentPane().add(new login());
 		marco.setVisible(true);
 	}
 	

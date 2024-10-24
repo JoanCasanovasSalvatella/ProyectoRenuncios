@@ -9,7 +9,7 @@ public class marcoApp extends JFrame {
 	        setSize(screenSize.width, screenSize.height); // Establecer el tamaño de la ventana al tamaño de la pantalla
 	        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	        
-	        loginUser menu = new loginUser();
+	        login menu = new login();
 	        add(menu);
 	    }
 

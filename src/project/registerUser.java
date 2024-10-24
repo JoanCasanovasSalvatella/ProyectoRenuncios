@@ -15,16 +15,6 @@ public class registerUser extends JPanel {
     private String role;
 	
 	public registerUser() {
-		// Conectar a la base de datos al entrar al panel
-        con = bbdd.conectarBD();
-        
-        if (con != null) {
-            System.out.println("Conexión exitosa a la base de datos.");
-            // Aquí puedes realizar cualquier acción adicional que necesites con la conexión
-        } else {
-            JOptionPane.showMessageDialog(this, "Error al conectar a la base de datos.");
-            // Aquí puedes manejar el error de conexión, como mostrar un mensaje de error al usuario
-        }
 		
     	Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize(); // Obtener el tamaño de la pantalla
         setPreferredSize(new Dimension(screenSize.width, screenSize.height)); // Establecer el tamaño preferido del panel
