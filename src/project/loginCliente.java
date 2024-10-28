@@ -1,13 +1,21 @@
 
 import javax.swing.*;
-
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class loginCliente extends JPanel implements ActionListener{
+	private Connection con;
+	JTextField username;
+	JPasswordField passwd;
 	
 	public loginCliente() {
+		con = bbdd.conectarBD();
+		
     	Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize(); // Obtener el tamaño de la pantalla
         setPreferredSize(new Dimension(screenSize.width, screenSize.height)); // Establecer el tamaño preferido del panel
 
@@ -32,14 +40,14 @@ public class loginCliente extends JPanel implements ActionListener{
         usernameLbl.setFont(new Font("Arial", Font.BOLD, 18));
         formPanel.add(usernameLbl, gbc);
         
-        JTextField username = new JTextField();
+        username = new JTextField();
         formPanel.add(username, gbc);
         
         JLabel passwdLbl = new JLabel("Contraseña");
         passwdLbl.setFont(new Font("Arial", Font.BOLD, 18));
         formPanel.add(passwdLbl, gbc);
         
-        JTextField passwd = new JTextField();
+        passwd = new JPasswordField();
         formPanel.add(passwd, gbc);
         
         JButton loginADM = new JButton("Iniciar sessión");
@@ -79,14 +87,63 @@ public class loginCliente extends JPanel implements ActionListener{
 
 	// Metodo para iniciar sessión
 	public void loginUSR() {
-		//Mostrar mensaje de login exitoso
-		JOptionPane.showMessageDialog(null, "Inicio de sessión exitoso");
-		
-		JFrame marco = (JFrame) SwingUtilities.getWindowAncestor(this);
-		marco.remove(this);
-		marco.getContentPane().add(new mainUser());
-		marco.setVisible(true);
+		String nombre = username.getText();
+        String contraseña = passwd.getText();
+        if (validarUsuario(nombre, contraseña)) {
+            // Usuario válido, continuar al siguiente panel
+        	JFrame marco = (JFrame) SwingUtilities.getWindowAncestor(this);
+    		marco.remove(this);
+    		marco.getContentPane().add(new mainUser());
+    		marco.setVisible(true);
+        } else {
+            JOptionPane.showMessageDialog(null, "El usuario o la contraseña no es correcta.");
+        }
 	}
+	
+	private boolean validarUsuario(String nombre, String contraseña) {
+		if (nombre.isEmpty() || contraseña.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Por favor, introduzca un nombre y una contraseña.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+        
+//        if (usuarioExiste(nombre)) {
+//            JOptionPane.showMessageDialog(null, "El usuario no está registrado.", "Error", JOptionPane.ERROR_MESSAGE);
+//        }
+        
+        String query = "SELECT * FROM USUARI WHERE USUARI = ? AND PW = ?";
+        try (PreparedStatement statement = con.prepareStatement(query)) {
+            statement.setString(1, nombre);
+            statement.setString(2, contraseña);
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                String rol = resultSet.getString("ROL");
+             // Verifica si el rol es "Administrador" o "Cliente"
+                if ("Cliente".equalsIgnoreCase(rol)) {
+                	return resultSet.next(); // Devuelve true si hay al menos una fila
+                } else {
+                    return false; // No es administrador, devuelve false
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false; // En caso de error, devuelve falso
+        }
+		return false;
+    }
+	
+	private boolean usuarioExiste(String usuario) {
+        String query = "SELECT COUNT(*) FROM USUARI WHERE USUARI = ?";
+        try (PreparedStatement statement = con.prepareStatement(query)) {
+            statement.setString(1, usuario);
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                int count = resultSet.getInt(1);
+                return count == 0;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 	
 	// Metodo para enlazar con el archivo de registro para administradores
 	public void signupUSR() {
@@ -105,11 +162,15 @@ public class loginCliente extends JPanel implements ActionListener{
 		marco.setVisible(true);
 	}
 	
+	public String getUsername() {
+    	String usuario = username.getText().trim();
+    	return usuario;
+    }
+	
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
 		
 	}
 	
-
 }
