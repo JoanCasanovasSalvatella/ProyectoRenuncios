@@ -87,7 +87,8 @@ public class loginAdmin extends JPanel implements ActionListener{
 	// Metodo para iniciar sessión
 	public void loginADM() {
 		String nombre = username.getText();
-        String contraseña = passwd.getText();
+		String contraseña = new String(passwd.getPassword());  // Obtener contraseña de forma segura
+		
         if (validarUsuario(nombre, contraseña)) {
             // Usuario válido, continuar al siguiente panel
         	JFrame marco = (JFrame) SwingUtilities.getWindowAncestor(this);
@@ -100,33 +101,31 @@ public class loginAdmin extends JPanel implements ActionListener{
 	}
 	
 	private boolean validarUsuario(String nombre, String contraseña) {
-		if (nombre.isEmpty() || contraseña.isEmpty()) {
+        if (nombre.isEmpty() || contraseña.isEmpty()) {
             JOptionPane.showMessageDialog(null, "Por favor, introduzca un nombre y una contraseña.", "Error", JOptionPane.ERROR_MESSAGE);
+            return false;
         }
-        
-//        if (usuarioExiste(nombre)) {
-//            JOptionPane.showMessageDialog(null, "El usuario no está registrado.", "Error", JOptionPane.ERROR_MESSAGE);
-//        }
-        
+
         String query = "SELECT * FROM USUARI WHERE USUARI = ? AND PW = ?";
         try (PreparedStatement statement = con.prepareStatement(query)) {
             statement.setString(1, nombre);
             statement.setString(2, contraseña);
             ResultSet resultSet = statement.executeQuery();
+
             if (resultSet.next()) {
                 String rol = resultSet.getString("ROL");
-             // Verifica si el rol es "Administrador" o "Cliente"
                 if ("Administrador".equalsIgnoreCase(rol)) {
-                	return resultSet.next(); // Devuelve true si hay al menos una fila
+                    return true;
                 } else {
-                    return false; // No es administrador, devuelve false
+                    JOptionPane.showMessageDialog(null, "Acceso no permitido para este rol.");
+                    return false;
                 }
             }
         } catch (SQLException e) {
             e.printStackTrace();
-            return false; // En caso de error, devuelve falso
+            return false;
         }
-		return false;
+        return false; // Si no se encontró el usuario o la contraseña
     }
 	
 	private boolean usuarioExiste(String usuario) {
