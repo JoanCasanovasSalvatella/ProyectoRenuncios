@@ -6,13 +6,19 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
+
 
 // MenÃº que vera el usuario al iniciar sesion exitosamente
 public class mainUser extends JPanel {
 	private Connection con;
+	private String selectType; // Almacenara los tipos de servicios
+	private String selectColor; // Almacenara si el anuncio es a color o en blanco y negro
+	private String cp; // Almacenara los codigos postales
 	
 	// Pagina de perfil del usuario
 	public mainUser() {
+		con = bbdd.conectarBD();
     	Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize(); // Obtener el tamaÃ±o de la pantalla
         setPreferredSize(new Dimension(screenSize.width, screenSize.height)); // Establecer el tamaÃ±o preferido del panel
 
@@ -50,7 +56,7 @@ public class mainUser extends JPanel {
         solicitar.addActionListener(new ActionListener() {
         	// Se llama al metodo irSignUp que cambia la pagina a la de registro
         	public void actionPerformed(ActionEvent e) {
-        		addService(e);
+        		addContractacio(e);
 			}
         });
         
@@ -68,10 +74,47 @@ public class mainUser extends JPanel {
 			marco.setVisible(true);
 		}
 		
-		public void addService(ActionEvent e) {
-			String state = JOptionPane.showInputDialog("Estado:");
-			String CIF = JOptionPane.showInputDialog("CIF:");
+		// Funcion para añadir un servicio
+		public boolean addContractacio(ActionEvent e) {
+		    String CIF = JOptionPane.showInputDialog("Escribe tu CIF:");
+		    // Obtener los CIF de la bd
+		    String queryCIF = "SELECT CIF FROM CLIENT WHERE CIF = ?"; // Seleccionar la fila donde el CIF sea el introducido por teclado
+		    try (PreparedStatement statement = con.prepareStatement(queryCIF)) {
+		        statement.setString(1, CIF); // Buscar cualquier registro en el que el cif coincida
+		        ResultSet resultSet = statement.executeQuery();
+		        
+		        if (resultSet.next()) {
+		            // Si el CIF existe, realizamos el INSERT
+		            String insertQuery = "INSERT INTO CONTRACTACIO ( DATAC, ESTAT, CIF) VALUES (?, ?, ?)";
+		            try (PreparedStatement insertStatement = con.prepareStatement(insertQuery)) {
+		            	insertStatement.setDate(1, java.sql.Date.valueOf(LocalDate.now())); // Añadir la fecha actual
+		                insertStatement.setString(2, "Solicitado"); // Establece el servicio contratado al estado solicitado
+		                insertStatement.setString(3, CIF);
+		                insertStatement.executeUpdate();
+		                JOptionPane.showMessageDialog(this, "Se ha añadido un registro en la tabla contractacio");
+		                
+		                irService(e);
+		            }
+		            return true; // Devuelve true si se realiza el insert
+		        } else {
+		            JOptionPane.showMessageDialog(this, "No existe el CIF especificado");
+		            return false;
+		        }
+		    } catch (SQLException e2) {
+		        e2.printStackTrace();
+		        JOptionPane.showMessageDialog(this, "Error inesperado: " + e2.getMessage());
+		        return false; // En caso de error, devuelve falso
+		    }
 		}
+		
+		// Metodo para añadir un servicio a la tabla SERV_CONTRACTAT
+		public void irService(ActionEvent e) {
+			JFrame marco = (JFrame) SwingUtilities.getWindowAncestor(this);
+			marco.remove(this);
+			marco.getContentPane().add(new addServicio());
+			marco.setVisible(true);
+		}
+
 		
 		public boolean getService() {
 			loginAdmin LA = new loginAdmin(); // Crear una instancia de la classe loginAdmin(LA)
