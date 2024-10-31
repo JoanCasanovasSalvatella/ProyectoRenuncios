@@ -1,4 +1,3 @@
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -10,192 +9,262 @@ import java.sql.SQLException;
 import java.util.HashMap;
 
 public class addServicio extends JPanel {
-	private Connection con;
-	private JTextField username;
+    private Connection con;
+    private JTextField username;
     private JTextField passwd;
     private String role;
     private JTextField cif;
     private JTextField empresa;
     private JTextField sector;
+    private Integer cpID;
     private String selectType;
-    String usuario;
-    int sedeID;
-	
-	public addServicio() {
-		con = bbdd.conectarBD();
-		
-    	Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize(); // Obtener el tama√±o de la pantalla
-        setPreferredSize(new Dimension(screenSize.width, screenSize.height)); // Establecer el tama√±o preferido del panel
+    private HashMap<String, Integer> sedesMap = new HashMap<>();
+    private int sedeID;
 
-        setLayout(new BorderLayout()); // Configurar el layout del panel
+    public addServicio() {
+        con = bbdd.conectarBD(); // Conecta a la base de datos
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        setPreferredSize(new Dimension(screenSize.width, screenSize.height));
+        setLayout(new BorderLayout());
 
-        // Configurar los diferentes componentes
-        JLabel label = new JLabel("Registrate como Cliente", JLabel.CENTER);
+        // Etiqueta principal
+        JLabel label = new JLabel("AÒadir un servicio", JLabel.CENTER);
         label.setFont(new Font("Arial", Font.BOLD, 30));
         add(label, BorderLayout.NORTH);
 
-        // Crear un panel para el formulario
-        JPanel formPanel = new JPanel();
-        formPanel.setLayout(new GridBagLayout()); // Utilizar GridBagLayout para centrar los elementos
-        
+        // Panel de formulario
+        JPanel formPanel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(10, 10, 10, 10); // A√±adir espacio entre los componentes
+        gbc.insets = new Insets(10, 10, 10, 10);
         gbc.gridx = 0;
-        gbc.gridy = GridBagConstraints.RELATIVE; // Configurar el layout del formulario
-        gbc.fill = GridBagConstraints.HORIZONTAL; // Ocupa toda la fila horizontalmente
-        
-        JLabel usernameLbl = new JLabel("Nombre de usuario");
-        usernameLbl.setFont(new Font("Arial", Font.BOLD, 18));
-        formPanel.add(usernameLbl, gbc);
-        
+        gbc.gridy = GridBagConstraints.RELATIVE;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+
+        // Campos del formulario
+        formPanel.add(new JLabel("Nombre de usuario"), gbc);
         username = new JTextField(20);
         formPanel.add(username, gbc);
-        
-        JLabel passwdLbl = new JLabel("Contrasenya");
-        passwdLbl.setFont(new Font("Arial", Font.BOLD, 18));
-        formPanel.add(passwdLbl, gbc);
-        
-        passwd = new JTextField();
+
+        formPanel.add(new JLabel("Contrasenya"), gbc);
+        passwd = new JTextField(20);
         formPanel.add(passwd, gbc);
-        
-        JLabel cifLbl = new JLabel("Cif de la empresa");
-        cifLbl.setFont(new Font("Arial", Font.BOLD, 18));
-        formPanel.add(cifLbl, gbc);
-        
-        
+
+        formPanel.add(new JLabel("Cif de la empresa"), gbc);
         cif = new JTextField(20);
         formPanel.add(cif, gbc);
-        
-        JLabel empresaLbl = new JLabel("Nombre de la empresa");
-        empresaLbl.setFont(new Font("Arial", Font.BOLD, 18));
-        formPanel.add(empresaLbl, gbc);
-        
-        empresa = new JTextField();
+
+        formPanel.add(new JLabel("Nombre de la empresa"), gbc);
+        empresa = new JTextField(20);
         formPanel.add(empresa, gbc);
-        
-        JLabel sectorLbl = new JLabel("Sector de la empresa");
-        sectorLbl.setFont(new Font("Arial", Font.BOLD, 18));
-        formPanel.add(sectorLbl, gbc);
-        
+
+        formPanel.add(new JLabel("Sector de la empresa"), gbc);
         sector = new JTextField(20);
         formPanel.add(sector, gbc);
-        
-        JLabel sedeLbl = new JLabel("Sede");
-        sedeLbl.setFont(new Font("Arial", Font.BOLD, 18));
-        formPanel.add(sedeLbl, gbc);
-        
-        HashMap<String, Integer> sedesMap = new HashMap<>();
-        sedesMap.put("Web", 0);
-        sedesMap.put("Flyer", 2);
-        sedesMap.put("Valla publicitaria", 1);
-        
-        String[] sedes = {"LLEIDA", "BARCELONA", "MADRID"};
-        JComboBox<String> comboBox = new JComboBox<>(sedes);
+
+        // Desplegable para seleccionar un tipo de servicio
+        formPanel.add(new JLabel("Tipo de servicio"), gbc);
+        JComboBox<String> comboBox = new JComboBox<>(new String[]{"Web", "Flyer", "Valla publicitaria"});
         formPanel.add(comboBox, gbc);
-        selectType = (String) comboBox.getSelectedItem();
-        
+
         comboBox.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String selectedSede = (String) comboBox.getSelectedItem();
-                // Obtener el ID desde el mapa
-                sedeID = sedesMap.get(selectedSede);
-                selectType = selectedSede;  // Opcional: guardar el nombre si lo necesitas
-                // Aqu√≠ puedes usar el ID para lo que necesites (guardar en base de datos, etc.)
+                String selectedService = (String) comboBox.getSelectedItem();
+                int serviceID = sedesMap.get(selectedService);
+                // You might want to use a different variable name for clarity
+                String selectedServiceType = selectedService; // use selectedServiceType
             }
         });
-	}
-	
-	// Metodo para volver al menu
-		public void volver() {
-			JFrame marco = (JFrame) SwingUtilities.getWindowAncestor(this);
-			marco.remove(this);
-			marco.getContentPane().add(new loginCliente());
-			marco.setVisible(true);
-		}
+        
+        // Desplegable para seleccionar un codigo postal
+        formPanel.add(new JLabel("Codigo postal"), gbc);
+        JComboBox<String> comboCP = new JComboBox<>(new String[]{"25001", "25002", "25003", "25004", "25005", "25006"});
+        formPanel.add(comboCP, gbc);
+
+        comboCP.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String selectedCP = (String) comboCP.getSelectedItem(); // Corrected to comboCP
+                cpID = sedesMap.get(selectedCP);
+                // Use a different variable if needed
+                String selectedPostalCode = selectedCP; // use selectedPostalCode
+            }
+        });
+
+        add(formPanel, BorderLayout.CENTER);
+        
+        // Desplegable para seleccionar una medida
+        formPanel.add(new JLabel("Medida"), gbc);
+        JComboBox<String> comboMedida = new JComboBox<>(new String[]{"PequeÒo", "Mediano", "Grande"});
+        formPanel.add(comboMedida, gbc);
+
+        comboMedida.addActionListener(new ActionListener() {
+
+            public void actionPerformed(ActionEvent e) {
+                String selectedSize = (String) comboMedida.getSelectedItem(); // Corrected to comboCP
+                Integer sizeID = sedesMap.get(selectedSize);
+                // Use a different variable if needed
+                String size = selectedSize; // use selectedPostalCode
+            	}
+        	});
+        
+        	// Desplegable para seleccionar una web donde publicar
+	        formPanel.add(new JLabel("Web"), gbc);
+		    JComboBox<String> comboWebs = new JComboBox<>(new String[]{"Crunchyroll", "Amazon", "PCComponentes", "Youtube", "Twitch"});
+		    formPanel.add(comboWebs, gbc);
 		
-		public void loadSedesIntoMap() { 
-			HashMap<String, Integer> typesMap = new HashMap<>(); 
-			String query = "SELECT nombre_sede, id_sede FROM SEDES"; 
-			// Ajusta los nombres de columna y tabla seg˙n tu BD 
-			try (PreparedStatement statement = con.prepareStatement(query)) { 
-				ResultSet resultSet = statement.executeQuery(); 
-				while (resultSet.next()) { 
-					String nombreSede = resultSet.getString("nombre_sede"); 
-					int idSede = resultSet.getInt("id_sede"); 
-					typesMap.put(nombreSede, idSede); 
-					} 
-				} catch (SQLException e) { 
-					e.printStackTrace(); 
-				} 
+		    comboMedida.addActionListener(new ActionListener() {
+		
+		        public void actionPerformed(ActionEvent e) {
+		            String selectedWeb = (String) comboMedida.getSelectedItem(); // Corrected to comboCP
+		            Integer webID = sedesMap.get(selectedWeb);
+		            String size = selectedWeb;
+		        	}
+		    	});
 			}
-		
-		// M√©todo para insertar un nuevo usuario en la base de datos
-	    public boolean insertarUsuario() {
-			usuario = username.getText().trim();
-            String contrasenya = passwd.getText().trim();
-            role = "Cliente";
-            
-            if (usuario.isEmpty() || contrasenya.isEmpty()) {
-                JOptionPane.showMessageDialog(null, "Por favor, introduzca un nombre y una contrase√±a.", "Error", JOptionPane.ERROR_MESSAGE);
+
+    // MÈtodo para volver al men˙
+    public void volver() {
+        JFrame marco = (JFrame) SwingUtilities.getWindowAncestor(this);
+        marco.remove(this);
+        marco.getContentPane().add(new loginCliente());
+        marco.setVisible(true);
+    }
+    
+    public boolean insertService(String selectedServiceType, String size) {
+    	String queryNumC = "SELECT MAX(NUMC) FROM CONTRACTACIO"; // Obtener el ultimo numC en la tabla contractacio
+    	
+    	try (PreparedStatement statement = con.prepareStatement(queryNumC)) {
+            int rowCount = statement.executeUpdate();
+            JOptionPane.showMessageDialog(null, "Se ha obtenido el ultimo registro exitosamente");
+            return rowCount > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "La consulta ha fallado");
+        }
+    	
+    	// Pedir las fechas entre las que se publicara el anuncio
+    	String dateS = JOptionPane.showInputDialog("Fecha de inicio de la publicaciÛn");
+		String dateF = JOptionPane.showInputDialog("Fecha de finalizaciÛn de la publicaciÛn");
+    	
+    	
+    	if(selectedServiceType == "Web") {
+    		String queryWeb = "INSERT INTO SERV_CONTRACTAT(NUMC, TIPUS, IMATGE, DATAL, DATAF, MIDA, PREU, PAGAMENT, NUMW, NUML) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            try (PreparedStatement statement = con.prepareStatement(queryWeb)) {
+                statement.setString(1, queryNumC);
+                statement.setString(2, "Web");
+                statement.setString(4, dateS);
+                statement.setString(5, dateF);
+                statement.setString(6, size);
+                
+                if(size == "PequeÒo") {
+                	statement.setInt(7, 10);
+                }
+                
+                if(size == "Mediano") {
+                	statement.setInt(7, 25);
+                }
+                
+                if(size == "Grande") {
+                	statement.setInt(7, 40);
+                }
+                
+                statement.setString(8, "Tarjeta");
+                
+                int rowCount = statement.executeUpdate();
+                JOptionPane.showMessageDialog(null, "Usuario registrado exitosamente");
+                return rowCount > 0;
+            } catch (SQLException e) {
+                e.printStackTrace();
             }
-            
-            if (usuarioExiste(usuario)) {
-                JOptionPane.showMessageDialog(null, "El usuario ya est√° registrado.", "Error", JOptionPane.ERROR_MESSAGE);
+    	}
+    	
+    	if(selectedServiceType == "Flyer") {
+    		String query = "INSERT INTO SERV_CONTRACTAT(NUMC, TIPUS, TXT, IMATGE, DATAL, DATAF, MIDA, COLOR, PREU, PAGAMENT, NUMW, CP, NUML) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            try (PreparedStatement statement = con.prepareStatement(query)) {
+                statement.setString(1, queryNumC);
+                statement.setString(2, "Web");
+                statement.setString(3, role);
+                int rowCount = statement.executeUpdate();
+                JOptionPane.showMessageDialog(null, "Usuario registrado exitosamente");
+                return rowCount > 0;
+            } catch (SQLException e) {
+                e.printStackTrace();
             }
-            
-	        String query = "INSERT INTO USUARI(USUARI, PW, ROL) VALUES (?,?,?)";
-	        try (PreparedStatement statement = con.prepareStatement(query)) {
-	            statement.setString(1, usuario);
-	            statement.setString(2, contrasenya);
-	            statement.setString(3, role);
-	            int rowCount = statement.executeUpdate();
-	            // Mostrar un mensaje conforme se ha insertado correctamente
-	            JOptionPane.showMessageDialog(null, "Usuario registrado exitosamente");
-	            
-	            return rowCount > 0;
-	        } catch (SQLException e) {
-	            e.printStackTrace();
-	        }
-	        return false;
-	    }
-	    
-	 // M√©todo para insertar un nuevo usuario en la base de datos
-	    public boolean insertarCliente() {
-	        String cf = cif.getText().trim();
-            String company = empresa.getText().trim();
-            String sec = sector.getText().trim();
-            
-            String query = "INSERT INTO CLIENT(CIF, EMPRESA, SECTOR, IDUSU, IDS) VALUES (?,?,?,?,?)";
-	        try (PreparedStatement statement = con.prepareStatement(query)) {
-	            statement.setString(1, cf);
-	            statement.setString(2, company);
-	            statement.setString(3, sec);
-	            statement.setString(4, usuario);
-	            statement.setInt(5, sedeID);
-	            int rowCount = statement.executeUpdate();
-	            // Mostrar un mensaje conforme se ha insertado correctamente
-	            JOptionPane.showMessageDialog(null, "Cliente registrado exitosamente");
-	            
-	            return rowCount > 0;
-	        } catch (SQLException e) {
-	            e.printStackTrace();
-	        }
-	        return false;
-	    }
-	    
-	    private boolean usuarioExiste(String usuario) {
-	        String query = "SELECT COUNT(*) FROM USUARI WHERE USUARI = ?";
-	        try (PreparedStatement statement = con.prepareStatement(query)) {
-	            statement.setString(1, usuario);
-	            ResultSet resultSet = statement.executeQuery();
-	            if (resultSet.next()) {
-	                int count = resultSet.getInt(1);
-	                return count > 0;
-	            }
-	        } catch (SQLException e) {
-	            e.printStackTrace();
-	        }
-	        return false;
-	    }
+    	}
+    	
+    	if(selectedServiceType == "Valla publicitaria") {
+    		
+    	}
+
+         
+         return false;
+    }
+    
+
+    // MÈtodo para insertar un nuevo usuario en la base de datos
+    public boolean insertarUsuario() {
+        String usuario = username.getText().trim();
+        String contrasenya = passwd.getText().trim();
+        role = "Cliente";
+
+        if (usuario.isEmpty() || contrasenya.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Por favor, introduzca un nombre y una contraseÒa.", "Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+
+        if (usuarioExiste(usuario)) {
+            JOptionPane.showMessageDialog(null, "El usuario ya est· registrado.", "Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+
+        String query = "INSERT INTO USUARI(USUARI, PW, ROL) VALUES (?,?,?)";
+        try (PreparedStatement statement = con.prepareStatement(query)) {
+            statement.setString(1, usuario);
+            statement.setString(2, contrasenya);
+            statement.setString(3, role);
+            int rowCount = statement.executeUpdate();
+            JOptionPane.showMessageDialog(null, "Usuario registrado exitosamente");
+            return rowCount > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    // MÈtodo para insertar un nuevo cliente en la base de datos
+    public boolean insertarCliente() {
+        String cf = cif.getText().trim();
+        String company = empresa.getText().trim();
+        String sec = sector.getText().trim();
+        String query = "INSERT INTO CLIENT(CIF, EMPRESA, SECTOR, IDUSU, IDS) VALUES (?,?,?,?,?)";
+        try (PreparedStatement statement = con.prepareStatement(query)) {
+            statement.setString(1, cf);
+            statement.setString(2, company);
+            statement.setString(3, sec);
+            statement.setString(4, username.getText().trim());
+            statement.setInt(5, sedeID);
+            int rowCount = statement.executeUpdate();
+            JOptionPane.showMessageDialog(null, "Cliente registrado exitosamente");
+            return rowCount > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    // MÈtodo para verificar si un usuario ya existe en la base de datos
+    private boolean usuarioExiste(String usuario) {
+        String query = "SELECT COUNT(*) FROM USUARI WHERE USUARI = ?";
+        try (PreparedStatement statement = con.prepareStatement(query)) {
+            statement.setString(1, usuario);
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                return resultSet.getInt(1) > 0;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 }
