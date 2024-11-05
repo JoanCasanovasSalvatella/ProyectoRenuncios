@@ -38,7 +38,7 @@ public class addServicio extends JPanel {
         setLayout(new BorderLayout());
 
         // Etiqueta principal
-        JLabel label = new JLabel("A�adir un servicio", JLabel.CENTER);
+        JLabel label = new JLabel("Añadir un servicio", JLabel.CENTER);
         label.setFont(new Font("Arial", Font.BOLD, 30));
         add(label, BorderLayout.NORTH);
 
@@ -50,27 +50,7 @@ public class addServicio extends JPanel {
         gbc.gridy = GridBagConstraints.RELATIVE;
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        // Campos del formulario
-        formPanel.add(new JLabel("Nombre de usuario"), gbc);
-        username = new JTextField(20);
-        formPanel.add(username, gbc);
-
-        formPanel.add(new JLabel("Contrasenya"), gbc);
-        passwd = new JTextField(20);
-        formPanel.add(passwd, gbc);
-
-        formPanel.add(new JLabel("Cif de la empresa"), gbc);
-        cif = new JTextField(20);
-        formPanel.add(cif, gbc);
-
-        formPanel.add(new JLabel("Nombre de la empresa"), gbc);
-        empresa = new JTextField(20);
-        formPanel.add(empresa, gbc);
-
-        formPanel.add(new JLabel("Sector de la empresa"), gbc);
-        sector = new JTextField(20);
-        formPanel.add(sector, gbc);
-
+        
         // Desplegable para seleccionar un tipo de servicio
         formPanel.add(new JLabel("Tipo de servicio"), gbc);
         JComboBox<String> comboBox = new JComboBox<>(new String[]{"Web", "Flyer", "Valla publicitaria"});
