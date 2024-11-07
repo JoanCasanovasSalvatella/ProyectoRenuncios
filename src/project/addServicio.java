@@ -34,6 +34,7 @@ public class addServicio extends JPanel {
     String selectedServiceType;
     String size;
     String web;
+    File imageFile;
 
     public addServicio() {
         con = bbdd.conectarBD(); // Conecta a la base de datos
@@ -116,6 +117,24 @@ public class addServicio extends JPanel {
 		        	}
 		    	});
 		    
+		 // Agrega un botón para seleccionar la imagen
+		    JButton selectImageButton = new JButton("Seleccionar imagen");
+		    selectImageButton.addActionListener(new ActionListener() {
+		        @Override
+		        public void actionPerformed(ActionEvent e) {
+		            JFileChooser fileChooser = new JFileChooser();
+		            fileChooser.setDialogTitle("Seleccionar imagen");
+		            fileChooser.setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("Archivos de imagen", "jpg", "png", "gif", "jpeg"));
+		            
+		            int result = fileChooser.showOpenDialog(null);
+		            if (result == JFileChooser.APPROVE_OPTION) {
+		                File selectedFile = fileChooser.getSelectedFile();
+		                imageFile = selectedFile; // Asigna el archivo seleccionado a la variable imageFile
+		            }
+		        }
+		    });
+		    formPanel.add(selectImageButton, gbc); // Agregar el botón al panel
+		    
 		    JButton Contratar = new JButton("Contratar servicio");
 		    Contratar.addActionListener(new ActionListener() {
 	        	// Se llama al metodo irSignUp que cambia la pagina a la de registro
@@ -123,6 +142,7 @@ public class addServicio extends JPanel {
 	        		insertService(selectedServiceType, size, web, imageFile);
 				}
 	        });
+		    formPanel.add(Contratar, gbc); 
 			}
 
     // M�todo para volver al men�
