@@ -30,6 +30,10 @@ public class addServicio extends JPanel {
     private int sedeID;
     private JButton uploadButton;
     private JLabel imageLabel;
+    
+    String selectedServiceType;
+    String size;
+    String web;
 
     public addServicio() {
         con = bbdd.conectarBD(); // Conecta a la base de datos
@@ -62,7 +66,7 @@ public class addServicio extends JPanel {
                 String selectedService = (String) comboBox.getSelectedItem();
                 int serviceID = sedesMap.get(selectedService);
                 // You might want to use a different variable name for clarity
-                String selectedServiceType = selectedService; // use selectedServiceType
+                selectedServiceType = selectedService; // use selectedServiceType
             }
         });
         
@@ -85,7 +89,7 @@ public class addServicio extends JPanel {
         
         // Desplegable para seleccionar una medida
         formPanel.add(new JLabel("Medida"), gbc);
-        JComboBox<String> comboMedida = new JComboBox<>(new String[]{"Peque�o", "Mediano", "Grande"});
+        JComboBox<String> comboMedida = new JComboBox<>(new String[]{"Pequeño", "Mediano", "Grande"});
         formPanel.add(comboMedida, gbc);
 
         comboMedida.addActionListener(new ActionListener() {
@@ -94,7 +98,7 @@ public class addServicio extends JPanel {
                 String selectedSize = (String) comboMedida.getSelectedItem(); // Corrected to comboCP
                 Integer sizeID = sedesMap.get(selectedSize);
                 // Use a different variable if needed
-                String size = selectedSize; // use selectedPostalCode
+                size = selectedSize; // use selectedPostalCode
             	}
         	});
         
@@ -108,9 +112,17 @@ public class addServicio extends JPanel {
 		        public void actionPerformed(ActionEvent e) {
 		            String selectedWeb = (String) comboMedida.getSelectedItem(); // Corrected to comboCP
 		            Integer webID = sedesMap.get(selectedWeb);
-		            String web = selectedWeb;
+		            web = selectedWeb;
 		        	}
 		    	});
+		    
+		    JButton Contratar = new JButton("Contratar servicio");
+		    Contratar.addActionListener(new ActionListener() {
+	        	// Se llama al metodo irSignUp que cambia la pagina a la de registro
+	        	public void actionPerformed(ActionEvent e) {
+	        		insertService(selectedServiceType, size, web, imageFile);
+				}
+	        });
 			}
 
     // M�todo para volver al men�
