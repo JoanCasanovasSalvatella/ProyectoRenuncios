@@ -32,12 +32,16 @@ public class addServicio extends JPanel {
     private JLabel imageLabel;
     private String selectedService;
     private Integer serviceID;
-    private int webID;
+    
+    private String selectedWeb;//Almacenara la web seleccionada
+    private Integer webID;//Almacenara el id de la web elejida
     
     String selectedServiceType;
     String size;
     String web;
     File imageFile;
+    
+    String selectedWebResult;
 
     public addServicio() {
         con = bbdd.conectarBD(); // Conecta a la base de datos
@@ -59,26 +63,24 @@ public class addServicio extends JPanel {
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
         
-        // Desplegable para seleccionar un tipo de servicio 
-        formPanel.add(new JLabel("Tipo de servicio"), gbc);
-        HashMap<String, Integer> sedesMap = new HashMap<>(); { 
-        	sedesMap.put("Web", 1); 
-        	sedesMap.put("Flyer", 2); 
-        	sedesMap.put("Valla publicitaria", 3);
+        // HashMap para seleccionar un tipo de servicio 
+        HashMap<String, Integer> serviceMap = new HashMap<>(); { 
+        	serviceMap.put("Web", 1); 
+        	serviceMap.put("Flyer", 2); 
+        	serviceMap.put("Valla publicitaria", 3);
         }
         
-        // Etiqueta para el tipo de servicio 
+        // Desplegable para el tipo de servicio 
         formPanel.add(new JLabel("Tipo de servicio"), gbc);
-        // Creaci�n del JComboBox con las opciones 
-        JComboBox<String> comboBox = new JComboBox<>(
-        	new String[]{"Web", "Flyer", "Valla publicitaria"}); 
+        // Creación del JComboBox con las opciones 
+        JComboBox<String> comboBox = new JComboBox<>(new String[]{"Web", "Flyer", "Valla publicitaria"}); 
         formPanel.add(comboBox, gbc);
         
-        // ActionListener para manejar la selecci�n del servicio 
+        // ActionListener para manejar la selección del servicio 
         comboBox.addActionListener(new ActionListener() {
         	@Override public void actionPerformed(ActionEvent e) {
         		selectedService = (String) comboBox.getSelectedItem();
-        		serviceID = sedesMap.get(selectedService);
+        		serviceID = serviceMap.get(selectedService);
         		if (serviceID != null) {
         			selectedServiceType = selectedService; 
         			
@@ -110,7 +112,7 @@ public class addServicio extends JPanel {
         
         // Desplegable para seleccionar una medida
         formPanel.add(new JLabel("Medida"), gbc);
-        JComboBox<String> comboMedida = new JComboBox<>(new String[]{"Peque�o", "Mediano", "Grande"});
+        JComboBox<String> comboMedida = new JComboBox<>(new String[]{"Pequeño", "Mediano", "Grande"});
         formPanel.add(comboMedida, gbc);
 
         comboMedida.addActionListener(new ActionListener() {
@@ -123,19 +125,36 @@ public class addServicio extends JPanel {
             	}
         	});
         
+		    // HashMap de las webs
+		    HashMap<String, Integer> webMap = new HashMap<>(); { 
+		    	webMap.put("Crunchyroll", 1); 
+		    	webMap.put("Amazon", 2); 
+		    	webMap.put("PCComponentes", 3);
+		    	webMap.put("Youtube", 4);
+		    	webMap.put("Twitch",5);
+		    }
+        	
         	// Desplegable para seleccionar una web donde publicar
 	        formPanel.add(new JLabel("Web"), gbc);
 		    JComboBox<String> comboWebs = new JComboBox<>(new String[]{"Crunchyroll", "Amazon", "PCComponentes", "Youtube", "Twitch"});
 		    formPanel.add(comboWebs, gbc);
 		
+		    // ActionListener para manejar la selección de la web 
 		    comboWebs.addActionListener(new ActionListener() {
-		
-		        public void actionPerformed(ActionEvent e) {
-		            String selectedWeb = (String) comboWebs.getSelectedItem();
-		            webID = sedesMap.get(selectedWeb);
-		            web = selectedWeb;
-		        	}
-		    	});
+	        	@Override public void actionPerformed(ActionEvent e) {
+	        		selectedWeb = (String) comboWebs.getSelectedItem();// Obtener la web elejida
+	        		webID = webMap.get(selectedWeb);
+	        		if (webID != null) {
+	        			selectedWebResult = selectedWeb; 
+	        			
+	        			System.out.println("Web elejida: " + selectedWeb + ", ID: " + webID);//**DEBUG, SE PUEDE BORRAR** 
+	        			} 
+	        		
+	        		else {
+	        			System.out.println("La web seleccionada es incorrecta o no se ha elegido."); 
+	        			} 
+	        		} 
+	        	});
 		    
 		    // Agrega un boton para seleccionar la imagen
 		    JButton selectImageButton = new JButton("Seleccionar imagen");
@@ -153,7 +172,7 @@ public class addServicio extends JPanel {
 		            }
 		        }
 		    });
-		    formPanel.add(selectImageButton, gbc); // Agregar el botón al panel
+		    formPanel.add(selectImageButton, gbc); // Agregar el botÃ³n al panel
 		    
 		    JButton Contratar = new JButton("Contratar servicio");
 		    Contratar.addActionListener(new ActionListener() {
@@ -174,51 +193,38 @@ public class addServicio extends JPanel {
     }
     
     public boolean insertService(String size, File imageFile) {
-        String queryNumC = "SELECT MAX(NUMC) FROM CONTRACTACIO";
+        String queryNumC = "SELECT MAX(NUMC) FROM CONTRACTACIO";//Seleccionar el ultimo numC añadido
         int numC = 0;
         
         // Obtener el ultimo NUMC
         try (PreparedStatement statement = con.prepareStatement(queryNumC);
-             ResultSet resultSet = statement.executeQuery()) {
-            if (resultSet.next()) {
-                numC = resultSet.getInt(1) + 1;
-                JOptionPane.showMessageDialog(null, "Se ha obtenido el ultimo n�mero exitosamente"); //**PARA DEBUG, SE DEBE BORRAR**
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "La consulta ha fallado");
-            return false;
-        }
+        	     ResultSet resultSet = statement.executeQuery()) {
+        	    
+        	    if (resultSet.next()) { // Verifica si el resultado tiene al menos una fila
+        	        numC = resultSet.getInt(1); // Obtiene el valor de la primera columna (MAX(NUMC))
+        	        
+        	        JOptionPane.showMessageDialog(null, "Numero de contractacion: " + numC); //#DEBUG#//
+        	    }
+        	} catch (SQLException e) {
+        	    e.printStackTrace();
+        	    JOptionPane.showMessageDialog(null, "La consulta ha fallado");
+        	}
 
-        // Pedir las fechas entre las que se publicará el anuncio
+        // Pedir las fechas entre las que se publicarÃ¡ el anuncio
         String dateS = JOptionPane.showInputDialog("Fecha de inicio de la publicacion");
         String dateF = JOptionPane.showInputDialog("Fecha de finalizacion de la publicacion");
 
+        // Validar fechas
+        if (dateS == null || dateF == null || dateS.isEmpty() || dateF.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Las fechas no pueden estar vacías.");
+            
+        }
+        
         //Realizar un insert dependiendo del tipo de servicio
         if (selectedServiceType.equals("Web")) {
-        	
-        	 // Obtener el id correspondiente a la web
-            String WEB_ID = "SELECT NUMW FROM WEB WHERE NOM = ?"; 
-            
-            try (PreparedStatement statement = con.prepareStatement(WEB_ID)) {
-            	statement.setString(1, web);
-            	ResultSet resultSet = statement.executeQuery();
-            	
-            	if (resultSet.next()) {
-            		System.out.println("Web: " + web);
-            		webID = resultSet.getInt("NUMW");
-            		System.out.println("Web ID: " + webID);
-            		} 
-            	else {
-            		System.out.println("No se encontr� la web con el nombre dado.");
-            		} 
-            	} catch (SQLException e) {
-            		e.printStackTrace();
-            		JOptionPane.showMessageDialog(null, "La consulta ha fallado");
-            	}
 
             // Insertar el nuevo registro
-            String queryWeb = "INSERT INTO SERV_CONTRACTAT(NUMC, TIPUS, IMATGE, DATAL, DATAF, MIDA, PREU, PAGAMENT, NUMW, NUML) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            String queryWeb = "INSERT INTO SERV_CONTRACTAT(NUMC, TIPUS, IMATGE, DATAL, DATAF, MIDA, PREU, PAGAMENT, NUMW) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
             try (PreparedStatement statement = con.prepareStatement(queryWeb);
             	FileInputStream inputStream = new FileInputStream(imageFile)) {
             	
@@ -231,7 +237,7 @@ public class addServicio extends JPanel {
                 statement.setString(6, size);
 
                 int price = 0;// Variable para el precio(Establecera uno dependiendo de la medida)
-                if ("Peque�o".equals(size)) {
+                if ("Pequeño".equals(size)) {
                     price = 10;
                 } 
                 
@@ -245,8 +251,7 @@ public class addServicio extends JPanel {
                 
                 // Mensaje de error
                 else {
-                    JOptionPane.showMessageDialog(null, "Tama�o no valido");
-                    
+                    JOptionPane.showMessageDialog(null, "Tamaño no valido");
                 }
 
                 statement.setInt(7, price);
@@ -255,11 +260,17 @@ public class addServicio extends JPanel {
                 statement.setInt(9, webID);
 
                 int result = statement.executeUpdate();
+                JOptionPane.showMessageDialog(null, "Servicio solicitado exitosamente"); //Mensaje indicando que se ha insertado correctamente
                 return result > 0;
                 
             } catch (SQLException e) {
                 e.printStackTrace();
                 JOptionPane.showMessageDialog(null, "La consulta ha fallado");
+                try {
+                    con.rollback(); // Hacer rollback en caso de error
+                } catch (SQLException rollbackEx) {
+                    rollbackEx.printStackTrace();
+                }
                 return false;
                 
             } catch (FileNotFoundException e1) {
