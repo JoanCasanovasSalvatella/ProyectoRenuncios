@@ -42,6 +42,7 @@ public class addServicio extends JPanel {
     File imageFile;
     
     String selectedWebResult;
+    double LP; //Location price
 
     public addServicio() {
         con = bbdd.conectarBD(); // Conecta a la base de datos
@@ -155,6 +156,11 @@ public class addServicio extends JPanel {
 	        			} 
 	        		} 
 	        	});
+
+		    formPanel.add(new JLabel("Localizacion(Solo para flyers y vallas publicitarias"), gbc);
+            JComboBox<String> comboLocation = new JComboBox<>(new String[]{"Cappont", "Excorxador", "Magraners", "Balàfia", "Pardinyes", "Seca de Sant Pere"});
+            formPanel.add(comboLocation, gbc);
+	        	
 		    
 		    // Agrega un boton para seleccionar la imagen
 		    JButton selectImageButton = new JButton("Seleccionar imagen");
@@ -259,7 +265,7 @@ public class addServicio extends JPanel {
                 statement.setString(8, payMeth);
                 statement.setInt(9, webID);
 
-                int result = statement.executeUpdate();
+                int result = statement.executeUpdate(); //Ejecutar el insert
                 JOptionPane.showMessageDialog(null, "Servicio solicitado exitosamente"); //Mensaje indicando que se ha insertado correctamente
                 return result > 0;
                 
@@ -286,6 +292,85 @@ public class addServicio extends JPanel {
 				return false;
 			}
         }
-        return false;
-    }
+        
+        if (selectedServiceType.equals("Valla publicitaria")) {
+            // Obtener el id de la ubicación escogida
+            String queryLocation = "SELECT NUML FROM LOCALITZACIO WHERE DESCRIPCIO = ?";
+
+            try (PreparedStatement statement = con.prepareStatement(queryLocation)) {
+                // Asumimos que `locationDescription` es la descripción de la ubicación seleccionada
+                String locationDescription = "Cappont"; // Cambia esto según tu lógica
+                statement.setString(1, locationDescription);
+
+                try (ResultSet rs = statement.executeQuery()) {
+                    if (rs.next()) {
+                        int numL = rs.getInt("NUML");
+                        System.out.println("ID de ubicación: " + numL); // *Debug*
+
+                        String txt = JOptionPane.showInputDialog(null, "Texto a mostrar en la valla publicitaria");
+
+                        // Insertar los valores en la tabla
+                        String queryVP = "INSERT INTO SERV_CONTRACTAT(NUMC, TIPUS, TXT, IMATGE, DATAL, DATAF, PREU, PAGAMENT, NUML) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                        try (PreparedStatement statementVP = con.prepareStatement(queryVP);
+                             FileInputStream inputStream = new FileInputStream(imageFile)) {
+
+                            // Rellenar los valores
+                            statementVP.setInt(1, numC);
+                            statementVP.setString(2, "Valla publicitaria");
+                            statementVP.setString(3, txt);
+                            statementVP.setBinaryStream(4, inputStream, (int) imageFile.length()); // Valor a la hora de insertar la imagen (binario)
+                            statementVP.setString(5, dateS);
+                            statementVP.setString(6, dateF);
+
+                            switch (locationDescription) {
+                                case "Cappont":
+                                    LP = 68;
+                                    
+                                case "Excorxador":
+                                    LP = 72;
+                                    
+                                case "Magraners":
+                                    LP = 60;
+                                    
+                                case "Balàfia":
+                                    LP = 65;
+                                    
+                                case "Pardinyes":
+                                    LP = 70;
+                                    
+                                case "Seca de Sant Pere":
+                                    LP = 75;
+                                 
+                            }
+
+                            statementVP.setDouble(7, LP); // Definir el valor del campo
+                            statementVP.setString(8, "Mensual");
+                            statementVP.setInt(9, numL);
+
+                            statementVP.executeUpdate(); // Ejecutar la inserción
+                            JOptionPane.showMessageDialog(null, "Valla publicitaria solicitada exitosamente"); // Mensaje indicando que se ha insertado correctamente
+                        } catch (FileNotFoundException e) {
+                            JOptionPane.showMessageDialog(null, "No se encontró la imagen proporcionada.");
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    } else {
+                        JOptionPane.showMessageDialog(null, "No se encontró la ubicación con la descripción proporcionada.");
+                    }
+                } catch (SQLException e) {
+                    JOptionPane.showMessageDialog(null, "La consulta ha fallado: " + e.getMessage());
+                }
+            } catch (SQLException e1) {
+                e1.printStackTrace();
+            }
+        }
+      
+        
+        if(selectedServiceType.equals("Flyer")){
+        	
+        }
+        return false;    
+    }	
 }
+    
+    
