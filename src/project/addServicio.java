@@ -32,6 +32,7 @@ public class addServicio extends JPanel {
     private JLabel imageLabel;
     private String selectedService;
     private Integer serviceID;
+    private JComboBox comboLocation;
     
     private String selectedWeb;//Almacenara la web seleccionada
     private Integer webID;//Almacenara el id de la web elejida
@@ -40,6 +41,9 @@ public class addServicio extends JPanel {
     String size;
     String web;
     File imageFile;
+    
+    JComboBox comboColor;
+    JComboBox comboCP;
     
     String selectedWebResult;
     double LP; //Location price
@@ -96,7 +100,7 @@ public class addServicio extends JPanel {
         
         // Desplegable para seleccionar un codigo postal
         formPanel.add(new JLabel("Codigo postal"), gbc);
-        JComboBox<String> comboCP = new JComboBox<>(new String[]{"25001", "25002", "25003", "25004", "25005", "25006"});
+        comboCP = new JComboBox<>(new String[]{"25001", "25002", "25003", "25004", "25005", "25006"});
         formPanel.add(comboCP, gbc);
 
         comboCP.addActionListener(new ActionListener() {
@@ -157,10 +161,17 @@ public class addServicio extends JPanel {
 	        		} 
 	        	});
 
-		    formPanel.add(new JLabel("Localizacion(Solo para flyers y vallas publicitarias"), gbc);
-            JComboBox<String> comboLocation = new JComboBox<>(new String[]{"Cappont", "Excorxador", "Magraners", "Balàfia", "Pardinyes", "Seca de Sant Pere"});
+		    // Desplegable para seleccionar una localizacion
+		    formPanel.add(new JLabel("Localizacion(Solo para flyers y vallas publicitarias)"), gbc);
+            comboLocation = new JComboBox<>(new String[]{"Cappont", "Excorxador", "Magraners", "Balàfia", "Pardinyes", "Seca de Sant Pere"});
             formPanel.add(comboLocation, gbc);
-	        	
+            
+            // Desplegable para seleccionar un estilo de impresión
+            formPanel.add(new JLabel("Color(Solo para flyers)"), gbc);
+            comboColor = new JComboBox<>(new String[]{"Si", "No"}); // Inicialización y asignación
+            formPanel.add(comboColor, gbc);
+            
+            
 		    
 		    // Agrega un boton para seleccionar la imagen
 		    JButton selectImageButton = new JButton("Seleccionar imagen");
@@ -223,7 +234,6 @@ public class addServicio extends JPanel {
         // Validar fechas
         if (dateS == null || dateF == null || dateS.isEmpty() || dateF.isEmpty()) {
             JOptionPane.showMessageDialog(null, "Las fechas no pueden estar vacías.");
-            
         }
         
         //Realizar un insert dependiendo del tipo de servicio
@@ -243,6 +253,7 @@ public class addServicio extends JPanel {
                 statement.setString(6, size);
 
                 int price = 0;// Variable para el precio(Establecera uno dependiendo de la medida)
+                
                 if ("Pequeño".equals(size)) {
                     price = 10;
                 } 
@@ -298,9 +309,10 @@ public class addServicio extends JPanel {
             String queryLocation = "SELECT NUML FROM LOCALITZACIO WHERE DESCRIPCIO = ?";
 
             try (PreparedStatement statement = con.prepareStatement(queryLocation)) {
-                // Asumimos que `locationDescription` es la descripción de la ubicación seleccionada
-                String locationDescription = "Cappont"; // Cambia esto según tu lógica
-                statement.setString(1, locationDescription);
+                
+				// Obtenemos la ubicacion elejida
+                String location = (String) comboLocation.getSelectedItem(); 
+                statement.setString(1, location);
 
                 try (ResultSet rs = statement.executeQuery()) {
                     if (rs.next()) {
@@ -322,7 +334,7 @@ public class addServicio extends JPanel {
                             statementVP.setString(5, dateS);
                             statementVP.setString(6, dateF);
 
-                            switch (locationDescription) {
+                            switch (location) {
                                 case "Cappont":
                                     LP = 68;
                                     
@@ -365,9 +377,59 @@ public class addServicio extends JPanel {
             }
         }
       
-        
+        // Bloque a ejecutar si el servicio elejido es Flyer
         if(selectedServiceType.equals("Flyer")){
+        	String queryCP = "SELECT CP FROM BARRI WHERE POBLACIO = ?";
+
+            try (PreparedStatement statementCP = con.prepareStatement(queryCP)) {
+            	// Obtenemos la ubicacion elejida
+                String cpLocation = (String) comboLocation.getSelectedItem(); 
+                statementCP.setString(1, cpLocation);
+                System.out.println(cpLocation);
+            } 
+            catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
         	
+        	
+        	// Sentencia para insertar los datos
+        	String queryF = "INSERT INTO SERV_CONTRACTAT(NUMC, TIPUS, IMATGE, DATAL, DATAF, COLOR, PREU, PAGAMENT, CP) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+            try (PreparedStatement statement = con.prepareStatement(queryF);
+                 FileInputStream inputStream = new FileInputStream(imageFile)) {
+            	statement.setInt(1, numC);
+            	statement.setString(2, "Flyer");
+            	statement.setBinaryStream(3, inputStream, (int) imageFile.length()); // Valor a la hora de insertar la imagen (binario)
+            	statement.setString(4, dateS);
+                statement.setString(5, dateF);
+                
+                String color = (String) comboColor.getSelectedItem(); 
+                statement.setString(6, color);
+                
+                int precio = 0;
+                
+                if(color.equals("Si")) {
+                	precio = 300;
+                }
+                
+                if(color.equals("No")) {
+                	precio = 170;
+                }
+                
+                String selectedCP = (String) comboCP.getSelectedItem();
+                
+                statement.setInt(7, precio);
+                statement.setString(8, "Unico");
+                statement.setString(9,selectedCP);
+                
+                statement.executeUpdate(); // Ejecutar la inserción
+                JOptionPane.showMessageDialog(null, "Flyer solicitada exitosamente"); // Mensaje indicando que se ha insertado correctamente
+                
+            } catch (SQLException | IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
         }
         return false;    
     }	
