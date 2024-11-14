@@ -47,6 +47,7 @@ public class addServicio extends JPanel {
     
     String selectedWebResult;
     double LP; //Location price
+    String mesAny = "";
 
     public addServicio() {
         con = bbdd.conectarBD(); // Conecta a la base de datos
@@ -209,6 +210,29 @@ public class addServicio extends JPanel {
         marco.setVisible(true);
     }
     
+    // Metodo para añadir una linea al tiquet
+    public void insertTicket(String mesAny, char pagat, int numC, int numS) {
+	            
+	    //Insertar una nueva linea el el recibo
+	    String tiquet = "INSERT INTO REBUT(MESANY,PAGAT, NUMC, NUMS) VALUES (?, ?, ?, ?)";
+	            
+	    try (PreparedStatement statementTIQ = con.prepareStatement(tiquet)){
+	      	statementTIQ.setString(1, mesAny);
+	    	statementTIQ.setString(2, String.valueOf(pagat)); //Convertir char a String
+	    	statementTIQ.setInt(3, numC);
+	       	statementTIQ.setInt(4, numS);
+	       	
+	       	// Ejecutar la inserción 
+	       	statementTIQ.executeUpdate(); 
+	       	System.out.println("Línea añadida al recibo exitosamente."); // DEBUG
+	       	
+	    	} catch (SQLException e) {
+	    	  e.printStackTrace();  
+	    	  JOptionPane.showMessageDialog(null, "No se ha podido agregar la linea al recibo");
+	    	  return;
+	    	}
+	}       
+    
     public boolean insertService(String size, File imageFile) {
         String queryNumC = "SELECT MAX(NUMC) FROM CONTRACTACIO";//Seleccionar el ultimo numC añadido
         int numC = 0;
@@ -278,6 +302,9 @@ public class addServicio extends JPanel {
 
                 int result = statement.executeUpdate(); //Ejecutar el insert
                 JOptionPane.showMessageDialog(null, "Servicio solicitado exitosamente"); //Mensaje indicando que se ha insertado correctamente
+                
+                insertTicket(payMeth, 'S', numC, serviceID); //Llamar al metodo para insertar una linea en el tiquet
+                
                 return result > 0;
                 
             } catch (SQLException e) {
@@ -361,6 +388,9 @@ public class addServicio extends JPanel {
 
                             statementVP.executeUpdate(); // Ejecutar la inserción
                             JOptionPane.showMessageDialog(null, "Valla publicitaria solicitada exitosamente"); // Mensaje indicando que se ha insertado correctamente
+                            
+                            insertTicket("Mensual", 'S', numC, serviceID); //Llamar al metodo para insertar una linea en el tiquet
+                            
                         } catch (FileNotFoundException e) {
                             JOptionPane.showMessageDialog(null, "No se encontró la imagen proporcionada.");
                         } catch (IOException e) {
@@ -393,7 +423,7 @@ public class addServicio extends JPanel {
 			}
         	
         	
-        	// Sentencia para insertar los datos
+        	// Sentencia para insertar los datos del flyer
         	String queryF = "INSERT INTO SERV_CONTRACTAT(NUMC, TIPUS, IMATGE, DATAL, DATAF, COLOR, PREU, PAGAMENT, CP) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
             try (PreparedStatement statement = con.prepareStatement(queryF);
@@ -425,6 +455,8 @@ public class addServicio extends JPanel {
                 
                 statement.executeUpdate(); // Ejecutar la inserción
                 JOptionPane.showMessageDialog(null, "Flyer solicitada exitosamente"); // Mensaje indicando que se ha insertado correctamente
+                
+                insertTicket("Unico", 'N', numC, serviceID); //Llamar al metodo para insertar una linea en el tiquet
                 
             } catch (SQLException | IOException e1) {
 				// TODO Auto-generated catch block
