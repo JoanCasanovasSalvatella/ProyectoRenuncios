@@ -48,7 +48,10 @@ public class addServicio extends JPanel {
     String selectedWebResult;
     double LP; //Location price
     String mesAny = "";
+    int idServicio;
+    int numC = 0; //Variable que almacenara el ultimo registro de la tabla contractacio
 
+    //Esta classe se encarga de registrar uno o mas servicios en la BD
     public addServicio() {
         con = bbdd.conectarBD(); // Conecta a la base de datos
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -91,6 +94,7 @@ public class addServicio extends JPanel {
         			selectedServiceType = selectedService; 
         			
         			System.out.println("Selected Service: " + selectedService + ", Service ID: " + serviceID);//**DEBUG, SE PUEDE BORRAR** 
+        			idServicio = serviceID; //Almacenar el id del servicio
         			} 
         		
         		else {
@@ -164,7 +168,7 @@ public class addServicio extends JPanel {
 
 		    // Desplegable para seleccionar una localizacion
 		    formPanel.add(new JLabel("Localizacion(Solo para flyers y vallas publicitarias)"), gbc);
-            comboLocation = new JComboBox<>(new String[]{"Cappont", "Excorxador", "Magraners", "Balàfia", "Pardinyes", "Seca de Sant Pere"});
+            comboLocation = new JComboBox<>(new String[]{"Cappont", "Escorxador", "Magraners", "Balàfia", "Pardinyes", "Seca de Sant Pere"});
             formPanel.add(comboLocation, gbc);
             
             // Desplegable para seleccionar un estilo de impresión
@@ -208,50 +212,30 @@ public class addServicio extends JPanel {
         marco.remove(this);
         marco.getContentPane().add(new loginCliente());
         marco.setVisible(true);
-    }
-    
-    // Metodo para añadir una linea al tiquet
-    public void insertTicket(String mesAny, char pagat, int numC, int numS) {
-	            
-	    //Insertar una nueva linea el el recibo
-	    String tiquet = "INSERT INTO REBUT(MESANY,PAGAT, NUMC, NUMS) VALUES (?, ?, ?, ?)";
-	            
-	    try (PreparedStatement statementTIQ = con.prepareStatement(tiquet)){
-	      	statementTIQ.setString(1, mesAny);
-	    	statementTIQ.setString(2, String.valueOf(pagat)); //Convertir char a String
-	    	statementTIQ.setInt(3, numC);
-	       	statementTIQ.setInt(4, numS);
-	       	
-	       	// Ejecutar la inserción 
-	       	statementTIQ.executeUpdate(); 
-	       	System.out.println("Línea añadida al recibo exitosamente."); // DEBUG
-	       	
-	    	} catch (SQLException e) {
-	    	  e.printStackTrace();  
-	    	  JOptionPane.showMessageDialog(null, "No se ha podido agregar la linea al recibo");
-	    	  return;
-	    	}
-	}       
+    }      
     
     public boolean insertService(String size, File imageFile) {
         String queryNumC = "SELECT MAX(NUMC) FROM CONTRACTACIO";//Seleccionar el ultimo numC añadido
-        int numC = 0;
+        
         
         // Obtener el ultimo NUMC
-        try (PreparedStatement statement = con.prepareStatement(queryNumC);
-        	     ResultSet resultSet = statement.executeQuery()) {
+        try (PreparedStatement statement = con.prepareStatement(queryNumC)){
+        	ResultSet resultSet = statement.executeQuery();//Ejecutar la consulta
         	    
-        	    if (resultSet.next()) { // Verifica si el resultado tiene al menos una fila
-        	        numC = resultSet.getInt(1); // Obtiene el valor de la primera columna (MAX(NUMC))
-        	        
-        	        JOptionPane.showMessageDialog(null, "Numero de contractacion: " + numC); //#DEBUG#//
+        	if (resultSet.next()) { // Verifica si el resultado tiene al menos una fila
+        	        numC = resultSet.getInt(1); // Obtiene el valor del select
+        	        System.out.println(numC); //DEBUG
         	    }
+        	else {
+        		JOptionPane.showMessageDialog(null, "La consulta no ha devuelto ningun resultado");
+        	}
+        	
         	} catch (SQLException e) {
         	    e.printStackTrace();
         	    JOptionPane.showMessageDialog(null, "La consulta ha fallado");
         	}
 
-        // Pedir las fechas entre las que se publicarÃ¡ el anuncio
+        // Pedir las fechas entre las que se publicara el anuncio
         String dateS = JOptionPane.showInputDialog("Fecha de inicio de la publicacion");
         String dateF = JOptionPane.showInputDialog("Fecha de finalizacion de la publicacion");
 
@@ -265,16 +249,17 @@ public class addServicio extends JPanel {
 
             // Insertar el nuevo registro
             String queryWeb = "INSERT INTO SERV_CONTRACTAT(NUMC, TIPUS, IMATGE, DATAL, DATAF, MIDA, PREU, PAGAMENT, NUMW) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-            try (PreparedStatement statement = con.prepareStatement(queryWeb);
-            	FileInputStream inputStream = new FileInputStream(imageFile)) {
+            try (PreparedStatement statementWeb = con.prepareStatement(queryWeb)) {
+            	FileInputStream inputStream = new FileInputStream(imageFile);
+            	System.out.println("Id servicio: " + idServicio);
             	
             	//Rellenar los valores
-            	statement.setInt(1, numC);
-                statement.setString(2, "Web");
-                statement.setBinaryStream(3, inputStream, (int) imageFile.length()); //VALOR A LA HORA DE INSERTAR LA IMAGEN (binario)
-                statement.setString(4, dateS);
-                statement.setString(5, dateF);
-                statement.setString(6, size);
+            	statementWeb.setInt(1, numC);               
+            	statementWeb.setString(2, "Web");
+                statementWeb.setBinaryStream(3, inputStream, (int) imageFile.length()); //VALOR A LA HORA DE INSERTAR LA IMAGEN (binario)
+                statementWeb.setString(4, dateS);
+                statementWeb.setString(5, dateF);
+                statementWeb.setString(6, size);
 
                 int price = 0;// Variable para el precio(Establecera uno dependiendo de la medida)
                 
@@ -295,15 +280,15 @@ public class addServicio extends JPanel {
                     JOptionPane.showMessageDialog(null, "Tamaño no valido");
                 }
 
-                statement.setInt(7, price);
+                statementWeb.setInt(7, price);
                 String payMeth = "Mensual"; //METODO DE PAGO DE PRUEBA(LO PODEMOS MODIFICAR)
-                statement.setString(8, payMeth);
-                statement.setInt(9, webID);
+                statementWeb.setString(8, payMeth);
+                statementWeb.setInt(9, webID);
 
-                int result = statement.executeUpdate(); //Ejecutar el insert
+                int result = statementWeb.executeUpdate(); //Ejecutar el insert
                 JOptionPane.showMessageDialog(null, "Servicio solicitado exitosamente"); //Mensaje indicando que se ha insertado correctamente
                 
-                insertTicket(payMeth, 'S', numC, serviceID); //Llamar al metodo para insertar una linea en el tiquet
+                insertTicket("Mensual", 'S', 1); //Llamar al metodo para insertar una linea en el tiquet
                 
                 return result > 0;
                 
@@ -355,7 +340,7 @@ public class addServicio extends JPanel {
 
                             // Rellenar los valores
                             statementVP.setInt(1, numC);
-                            statementVP.setString(2, "Valla publicitaria");
+                            statementVP.setString(2, "Valla");
                             statementVP.setString(3, txt);
                             statementVP.setBinaryStream(4, inputStream, (int) imageFile.length()); // Valor a la hora de insertar la imagen (binario)
                             statementVP.setString(5, dateS);
@@ -389,7 +374,8 @@ public class addServicio extends JPanel {
                             statementVP.executeUpdate(); // Ejecutar la inserción
                             JOptionPane.showMessageDialog(null, "Valla publicitaria solicitada exitosamente"); // Mensaje indicando que se ha insertado correctamente
                             
-                            insertTicket("Mensual", 'S', numC, serviceID); //Llamar al metodo para insertar una linea en el tiquet
+                            insertTicket("Mensual", 'S', 2); //Llamar al metodo para insertar una linea en el tiquet
+                            
                             
                         } catch (FileNotFoundException e) {
                             JOptionPane.showMessageDialog(null, "No se encontró la imagen proporcionada.");
@@ -456,7 +442,7 @@ public class addServicio extends JPanel {
                 statement.executeUpdate(); // Ejecutar la inserción
                 JOptionPane.showMessageDialog(null, "Flyer solicitada exitosamente"); // Mensaje indicando que se ha insertado correctamente
                 
-                insertTicket("Unico", 'N', numC, serviceID); //Llamar al metodo para insertar una linea en el tiquet
+                insertTicket("Unico", 'N', 3); //Llamar al metodo para insertar una linea en el tiquet
                 
             } catch (SQLException | IOException e1) {
 				// TODO Auto-generated catch block
@@ -465,6 +451,56 @@ public class addServicio extends JPanel {
         }
         return false;    
     }	
+    
+ // Metodo para añadir una linea al tiquet
+    public void insertTicket(String mesAny, char pagat, int numS) {
+    	int idTiq = 0;
+    	int idRebut = 0; //Almacenara el id final(sumado o no)
+    	
+    	System.out.println("Ultimo numC: " + numC);
+    	System.out.println("numS: " + numS);
+    	
+    	//Obtener el ultimo id de REBUT
+    	String tiqID = "SELECT MAX(NUMREBUT)FROM REBUT";
+    	// Obtener el ultimo NUMC
+        try (PreparedStatement tiqIDQuery = con.prepareStatement(tiqID)){
+        	ResultSet resultSet = tiqIDQuery.executeQuery();//Ejecutar la consulta
+        	    
+        	if (resultSet.next()) { // Verifica si el resultado tiene al menos una fila
+        	        idTiq = resultSet.getInt(1); // Obtiene el valor del select       	        
+        	        idRebut = idTiq + 1; // Sumar 1 al tiquet anterior(es decir el siguiente id)
+        	    }
+        	
+        	else {
+        		JOptionPane.showMessageDialog(null, "La consulta no ha devuelto ningun resultado");
+        		idRebut = 1;//Definimos el valor para la primera fila
+        	}
+        	
+        	} catch (SQLException e) {
+        	    e.printStackTrace();
+        	    JOptionPane.showMessageDialog(null, "La consulta ha fallado");
+        	}
+    	
+	    //Insertar una nueva linea en el recibo
+	    String tiquet = "INSERT INTO REBUT(NUMREBUT, MESANY,PAGAT, NUMC, NUMS) VALUES (?, ?, ?, ?, ?)";
+	    
+	    try (PreparedStatement statementTIQ = con.prepareStatement(tiquet)){
+	    	statementTIQ.setInt(1, idRebut);// insertar el id correspondiente
+	    	statementTIQ.setString(2, mesAny);
+	    	statementTIQ.setString(3, String.valueOf(pagat)); //Convertir char a String
+	    	statementTIQ.setInt(4, numC);
+	       	statementTIQ.setInt(5, numS);
+	       	
+	       	// Ejecutar la inserción 
+	       	statementTIQ.executeUpdate(); 
+	       	System.out.println("Línea añadida al recibo."); // DEBUG
+	       	
+	    	} catch (SQLException e) {
+	    	  e.printStackTrace();  
+	    	  JOptionPane.showMessageDialog(null, "No se ha podido agregar la linea al recibo");
+	    	  return;
+	    	}
+	} 
 }
     
     
