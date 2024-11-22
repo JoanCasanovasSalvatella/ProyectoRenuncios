@@ -1,4 +1,3 @@
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -214,13 +213,22 @@ public class addServicio extends JPanel {
 					}
 		        });
 		    formPanel.add(generarTiquet, gbc); 
+		    
+		    JButton backButton = new JButton("Volver atras");
+		    backButton.addActionListener(new ActionListener() {
+		        	// Se llama al metodo irSignUp que cambia la pagina a la de registro
+		        	public void actionPerformed(ActionEvent e) {
+		        		volver();
+					}
+		        });
+		    formPanel.add(backButton, gbc); 
 			}
 
     // Metodo para volver al menu
     public void volver() {
         JFrame marco = (JFrame) SwingUtilities.getWindowAncestor(this);
         marco.remove(this);
-        marco.getContentPane().add(new loginCliente());
+        marco.getContentPane().add(new login());
         marco.setVisible(true);
     }  
     
@@ -306,7 +314,7 @@ public class addServicio extends JPanel {
                 int result = statementWeb.executeUpdate(); //Ejecutar el insert
                 JOptionPane.showMessageDialog(null, "Servicio solicitado exitosamente"); //Mensaje indicando que se ha insertado correctamente
                 
-                insertTicket("Mensual", 'S'); //Llamar al metodo para insertar una linea en el tiquet
+                insertTicket("Mensual", 'N'); //Llamar al metodo para insertar una linea en el tiquet
                 
                 return result > 0;
                 
@@ -392,7 +400,7 @@ public class addServicio extends JPanel {
                             statementVP.executeUpdate(); // Ejecutar la inserción
                             JOptionPane.showMessageDialog(null, "Valla publicitaria solicitada exitosamente"); // Mensaje indicando que se ha insertado correctamente
                             
-                            insertTicket("Mensual", 'S'); //Llamar al metodo para insertar una linea en el tiquet
+                            insertTicket("Mensual", 'N'); //Llamar al metodo para insertar una linea en el tiquet
                             
                             
                         } catch (FileNotFoundException e) {
@@ -511,8 +519,6 @@ public class addServicio extends JPanel {
         	    JOptionPane.showMessageDialog(null, "La consulta ha fallado");
         	}
 		} 
-    
-    	//Metodo para ir a la classe donde se mostraran los datos del tiquet
     	
     	
 }
