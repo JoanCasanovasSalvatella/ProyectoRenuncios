@@ -49,30 +49,15 @@ public class mainAdmin extends JPanel {
 			}
         });
         
-        // Boton para aÃ±adir un servicio
-        JButton solicitar = new JButton("Solicitar un servicio");
-        formPanel.add(solicitar);
-        solicitar.addActionListener(new ActionListener() {
-        	// Se llama al metodo irSignUp que cambia la pagina a la de registro
-        	public void actionPerformed(ActionEvent e) {
-        		addContractacio(e);
-			}
-        });
-        
-        JLabel myServices = new JLabel("Servicios activos");
-        // Llamar al metodo que selecciona todas las columnas de un usuario
-        
-        formPanel.add(backButton, gbc);
-        
-        JButton ticketGenerator = new JButton("Generar un tiquet");
+        JButton ticketGenerator = new JButton("Gestionar una web");
         ticketGenerator.addActionListener(new ActionListener() {
         	// Se llama al metodo irSignUp que cambia la pagina a la de registro
         	public void actionPerformed(ActionEvent e) {
-        		addContractacio(e);
+        		web();
 			}
         });
         
-        JButton addLocation = new JButton("AÃ±adir una localizacion");
+        JButton addLocation = new JButton("Añadir una localizacion");
         addLocation.addActionListener(new ActionListener() {
         	// Se llama al metodo irSignUp que cambia la pagina a la de registro
         	public void actionPerformed(ActionEvent e) {
@@ -109,11 +94,18 @@ public class mainAdmin extends JPanel {
 		private void addWeb() {
 			JFrame marco = (JFrame) SwingUtilities.getWindowAncestor(this);
 			marco.remove(this);
-			marco.getContentPane().add(new addWeb());
+			marco.getContentPane().add(new gestionWeb());
 			marco.setVisible(true);
 		}
 		
-		// Funcion para aï¿½adir un servicio
+		private void web() {
+			JFrame marco = (JFrame) SwingUtilities.getWindowAncestor(this);
+			marco.remove(this);
+			marco.getContentPane().add(new gestionWeb());
+			marco.setVisible(true);
+		}
+		
+		// Funcion para añadir un servicio
 		public boolean addContractacio(ActionEvent e) {
 		    String CIF = JOptionPane.showInputDialog("Escribe tu CIF:");
 		    // Obtener los CIF de la bd
