@@ -1,3 +1,5 @@
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -14,6 +16,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import javax.swing.AbstractButton;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -22,14 +25,17 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
-public class gestionWeb extends JPanel implements ActionListener {
+public class gestionSede extends JPanel implements ActionListener {
     private Connection con;
-    private JTextField web;
-	private JTextField newWeb;
-	private JTextField url;
+	private JTextField newSede;
 	private JTextField textWebOld;
+	private JTextField oldSede;
+	private JTextField sede;
+	private JTextField ciutat;
+	private int newNumS;
+	private int numS;
     
-    public gestionWeb() {
+    public gestionSede() {
         // Conectar a la base de datos al entrar al panel
         con = bbdd.conectarBD();
 
@@ -45,7 +51,7 @@ public class gestionWeb extends JPanel implements ActionListener {
         setLayout(new BorderLayout()); // Configurar el layout del panel
 
         // Configurar el encabezado
-        JLabel label = new JLabel("Gestion web", JLabel.CENTER);
+        JLabel label = new JLabel("Gestion sede", JLabel.CENTER);
         label.setFont(new Font("Arial", Font.BOLD, 30));
         add(label, BorderLayout.NORTH);
 
@@ -65,10 +71,10 @@ public class gestionWeb extends JPanel implements ActionListener {
         gbc.fill = GridBagConstraints.HORIZONTAL; // Ocupa toda la fila horizontalmente
 
         // Campos para eliminar una web
-        JLabel labelweb = new JLabel("Web a eliminar");
-        web = new JTextField();
+        JLabel labelweb = new JLabel("Sede a eliminar");
+        sede = new JTextField();
         formPanel1.add(labelweb, gbc);
-        formPanel1.add(web, gbc);
+        formPanel1.add(sede, gbc);
 
         JButton confirm = new JButton("Confirmar");
         formPanel1.add(confirm);
@@ -76,12 +82,9 @@ public class gestionWeb extends JPanel implements ActionListener {
         confirm.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 //Logica para eliminar una web
-            	delWeb();
+            	delete();
             }
         });
-        formPanel1.add(confirm, gbc);
-            
-            
         formPanel1.add(confirm, gbc);
 
         // Bot�n de volver atr�s
@@ -94,39 +97,37 @@ public class gestionWeb extends JPanel implements ActionListener {
 
         formPanel1.add(backButton, gbc);
 
-        // Segundo formulario (Update web)
+        // Segundo formulario (Update)
         JPanel formPanel2 = new JPanel();
         formPanel2.setLayout(new GridBagLayout());
         formPanel2.setBackground(Color.LIGHT_GRAY);
 
         GridBagConstraints gbc2 = new GridBagConstraints();
-        gbc2.insets = new Insets(10, 10, 10, 10); // A�adir espacio entre los componentes
+        gbc2.insets = new Insets(10, 10, 10, 10); // Añadir espacio entre los componentes
         gbc2.gridx = 0;
         gbc2.gridy = GridBagConstraints.RELATIVE; // Configurar el layout del formulario
         gbc2.fill = GridBagConstraints.HORIZONTAL; // Ocupa toda la fila horizontalmente
 
         
-        JLabel labelWebOld = new JLabel("Web a modificar");
-        textWebOld = new JTextField();
-        String webOld = textWebOld.getText();
+        JLabel labelWebOld = new JLabel("Sede a modificar");
+        oldSede = new JTextField();
         formPanel2.add(labelWebOld, gbc2);
-        formPanel2.add(textWebOld, gbc2);
+        formPanel2.add(oldSede, gbc2);
         
-        JLabel lblNewWeb = new JLabel("Nuevo nombre");
-        newWeb = new JTextField();
-        String webNew = newWeb.getText();
-        formPanel2.add(lblNewWeb, gbc2);
-        formPanel2.add(newWeb, gbc2);
+        JLabel lblNew = new JLabel("Nuevo nombre");
+        newSede = new JTextField();
+        formPanel2.add(lblNew, gbc2);
+        formPanel2.add(newSede, gbc2);
         
-        JLabel lblUrl = new JLabel("Nueva URL");
-        url = new JTextField();
-        formPanel2.add(lblUrl, gbc2);
-        formPanel2.add(url, gbc2);
+        JLabel lblCity = new JLabel("Nueva ciudad");
+        ciutat = new JTextField();
+        formPanel2.add(lblCity, gbc2);
+        formPanel2.add(ciutat, gbc2);
 
         JButton confirmButton = new JButton("Confirmar");
         confirmButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-            	updateWeb();            	
+            	update();            	
             }
         });
         formPanel2.add(confirmButton, gbc2);
@@ -140,7 +141,7 @@ public class gestionWeb extends JPanel implements ActionListener {
         });
         formPanel2.add(backButton2, gbc2);
 
-        // Tercer formulario (Formulario para a�adir una web)
+        // Tercer formulario (Formulario para añadir una web)
         JPanel formPanel3 = new JPanel();
         formPanel3.setLayout(new GridBagLayout());
         formPanel3.setBackground(Color.LIGHT_GRAY);
@@ -151,38 +152,37 @@ public class gestionWeb extends JPanel implements ActionListener {
         gbc3.gridy = GridBagConstraints.RELATIVE; // Configurar el layout del formulario
         gbc3.fill = GridBagConstraints.HORIZONTAL; // Ocupa toda la fila horizontalmente  
         
-        JLabel labelweb1 = new JLabel("Nombre web");
-        JTextField web = new JTextField();
+        JLabel labelsede = new JLabel("Nombre sede");
+        JTextField nuevaSede = new JTextField();
         
-        formPanel3.add(labelweb1, gbc);
-        formPanel3.add(web, gbc);
+        formPanel3.add(labelsede, gbc);
+        formPanel3.add(nuevaSede, gbc);
         
         //Pedir las coordenadas
-        JLabel labelurl = new JLabel("URL(ej.www.amazon.es)");
-        JTextField inputUrl = new JTextField();
+        JLabel labelciudad = new JLabel("Ciudad");
+        JTextField inputCity = new JTextField();
         
-        formPanel3.add(labelurl, gbc);
-        formPanel3.add(inputUrl, gbc);
+        formPanel3.add(labelciudad, gbc);
+        formPanel3.add(inputCity, gbc);
         
         JButton confirmAdd = new JButton("Confirmar");
         formPanel3.add(confirmAdd);
         confirmAdd.addActionListener(new ActionListener() {
-        	
-        	// Se llama al metodo que cambia la pagina a la de registro
+
+			// Se llama al metodo que cambia la pagina a la de registro
         	public void actionPerformed(ActionEvent e) {
-        		int numW = 0;
-        		int newNumW = 0;
-        		String numWOld = "SELECT MAX(NUMW) FROM WEB";
-        		String nameWeb = web.getText();
-        		String webUrl = url.getText();
+        		
+        		String numWOld = "SELECT MAX(IDS) FROM SEU";
+        		String nameSede = nuevaSede.getText();
+        		String city = inputCity.getText();
         		
         		// Obtener el ultimo NUMC
                 try (PreparedStatement statement = con.prepareStatement(numWOld)){
                 	ResultSet resultSet = statement.executeQuery();//Ejecutar la consulta
                 	    
                 	if (resultSet.next()) { // Verifica si el resultado tiene al menos una fila
-                	        numW = resultSet.getInt(1); // Obtiene el valor del select
-                	        newNumW = numW + 1;
+                	        numS = resultSet.getInt(1); // Obtiene el valor del select
+                	        newNumS = numS + 1;
                 	    }
                 	else {
                 		JOptionPane.showMessageDialog(null, "La consulta no ha devuelto ningun resultado");
@@ -194,20 +194,17 @@ public class gestionWeb extends JPanel implements ActionListener {
                 	}
                 
         		//Insert para a�adir una localizacion
-        		String insertWeb = "INSERT INTO WEB(NUMW, NOM, URL, PREUP, PREUM, PREUG)VALUES(?, ?, ?, ?, ?, ?)";
+        		String insertWeb = "INSERT INTO SEU(IDS, NOM, CIUTAT)VALUES(?, ?, ?)";
         		try (PreparedStatement statementWeb = con.prepareStatement(insertWeb)){
-        			statementWeb.setInt(1, newNumW);
-        			statementWeb.setString(2, web.getText()); //Obtener el valor del campo de texto desc              
-        			statementWeb.setString(3, inputUrl.getText()); //Obtener el valor del campo de texto cord
-        			statementWeb.setInt(4, 10);
-        			statementWeb.setInt(5, 25);
-        			statementWeb.setInt(6, 40);
+        			statementWeb.setInt(1, newNumS);
+        			statementWeb.setString(2, nameSede); //Obtener el valor del campo de texto desc              
+        			statementWeb.setString(3, city); //Obtener el valor del campo de texto cord
         		
         			int result = statementWeb.executeUpdate(); //Ejecutar el insert
-        			JOptionPane.showMessageDialog(null, "Web a�adida exitosamente");
+        			JOptionPane.showMessageDialog(null, "Sede añadida exitosamente");
         		}
         		catch (SQLException e1) {
-        			JOptionPane.showMessageDialog(null, "Error al añadir una localizacion");
+        			JOptionPane.showMessageDialog(null, "Error al añadir una sede");
 					e1.printStackTrace();
 				}
 			}
@@ -230,69 +227,69 @@ public class gestionWeb extends JPanel implements ActionListener {
     }
     
     //METODO PARA ELIMINAR UNA WEB
-    private void delWeb() {
+    private void delete() {
         // SQL para eliminar una web por su nombre
-        String deleteWeb = "DELETE FROM WEB WHERE NOM = ?";
+        String deleteWeb = "DELETE FROM SEU WHERE NOM = ?";
         
-        // Pedir al usuario el nombre de la web que se desea eliminar
-        String nombreWeb = web.getText();
+        // Obtener el nombre de la sede a eliminar
+        String nombre = sede.getText();
         
-        if (nombreWeb != null && !nombreWeb.trim().isEmpty()) {  // Comprobar que el nombre no est� vac�o
+        if (nombre != null && !nombre.trim().isEmpty()) {  // Comprobar que el nombre no est� vac�o
             try (PreparedStatement statement = con.prepareStatement(deleteWeb)) {
                 // Establecer el valor del nombre en la consulta
-                statement.setString(1, nombreWeb);
+                statement.setString(1, nombre);
                 
                 // Ejecutar la consulta de eliminaci�n
                 int rowsAffected = statement.executeUpdate();
                 
                 // Comprobar si alguna fila fue eliminada
                 if (rowsAffected > 0) {
-                    JOptionPane.showMessageDialog(null, "La web " + nombreWeb + " ha sido eliminada exitosamente.");
+                    JOptionPane.showMessageDialog(null, "La sede " + nombre + " ha sido eliminada exitosamente.");
                 } else {
-                    JOptionPane.showMessageDialog(null, "No se encontr� ninguna web con ese nombre.");
+                    JOptionPane.showMessageDialog(null, "No se encontrado ninguna sede con ese nombre.");
                 }
             } catch (SQLException e) {
                 // Manejar cualquier error que ocurra al ejecutar la consulta
                 e.printStackTrace();
-                JOptionPane.showMessageDialog(null, "Error al eliminar la web.");
+                JOptionPane.showMessageDialog(null, "Error al eliminar la sede.");
             }
         } else {
-            JOptionPane.showMessageDialog(null, "El nombre de la web no puede estar vac�o.");
+            JOptionPane.showMessageDialog(null, "El nombre de la sede no puede estar vacio.");
         }
     }
     
   //METODO PARA ACTUALIZAR LOS DATOS DE UNA WEB
-    private void updateWeb() {
+    private void update() {
         // SQL para actualizar una web
-        String updateWeb = "UPDATE WEB SET NOM = ?, URL = ? WHERE NOM = ?";
-        String nuevaWeb = newWeb.getText();
-        String nuevaUrl = url.getText();
-        String nombreWeb = textWebOld.getText();
+        String updateWeb = "UPDATE SEU SET NOM = ?, CIUTAT = ? WHERE NOM = ?";
+        String nuevaSede = newSede.getText();
+        String nuevaCity = ciutat.getText();
+        String nombreSede = oldSede.getText();
         
         // Comprobar que el nombre y la URL no est�n vac�os
-        if (nombreWeb != null && !nombreWeb.trim().isEmpty() && nuevaUrl != null && !nuevaUrl.trim().isEmpty() && nombreWeb != null && !nombreWeb.trim().isEmpty()) {
+        if (nuevaSede != null && !nuevaSede.trim().isEmpty() && nuevaCity != null && !nuevaCity.trim().isEmpty() && nombreSede != null && !nombreSede.trim().isEmpty()) {
             try (PreparedStatement statement = con.prepareStatement(updateWeb)) {
                 // Establecer los valores en la consulta
-                statement.setString(1, nuevaWeb);  // Establecer el nuevo nombre de la web
-                statement.setString(2, nuevaUrl);   // Establecer la nueva URL
-                statement.setString(3, nombreWeb);  // Establecer el nombre antiguo para la condici�n WHERE
+                statement.setString(1, nuevaSede);  // Establecer el nuevo nombre de la web
+                statement.setString(2, nuevaCity);   // Establecer la nueva URL
+                statement.setString(3, nombreSede);  // Establecer el nombre antiguo para la condici�n WHERE
                 
-                // Ejecutar la consulta de actualizaci�n
+                // Ejecutar la consulta de actualizacion
                 int rowsAffected = statement.executeUpdate();
                 
                 // Comprobar si alguna fila fue actualizada
                 if (rowsAffected > 0) {
-                    JOptionPane.showMessageDialog(null, "La web " + nombreWeb + " ha sido actualizada exitosamente.");
+                    JOptionPane.showMessageDialog(null, "La sede " + nombreSede + " ha sido actualizada exitosamente.");
                 } else {
-                    JOptionPane.showMessageDialog(null, "No se encontro ninguna web con ese nombre para actualizar.");
+                    JOptionPane.showMessageDialog(null, "No se encontro ninguna sede con ese nombre para actualizar.");
                 }
             } catch (SQLException e) {
                 // Manejar cualquier error que ocurra al ejecutar la consulta
                 e.printStackTrace();
-                JOptionPane.showMessageDialog(null, "Error al actualizar la web.");
+                JOptionPane.showMessageDialog(null, "Error al actualizar la sedes.");
             }
         } else {
-            JOptionPane.showMessageDialog(null, "El nombre de la web y la URL no pueden estar vac�os.");
+            JOptionPane.showMessageDialog(null, "Los campos no puedes estar vacios.");
         }
     }
 
@@ -302,5 +299,3 @@ public class gestionWeb extends JPanel implements ActionListener {
 		
 	}
 }
-
-    

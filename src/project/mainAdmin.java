@@ -1,3 +1,4 @@
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -8,7 +9,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 
-// Menú que vera el usuario al iniciar sesion exitosamente
+// MenÃº que vera el usuario al iniciar sesion exitosamente
 public class mainAdmin extends JPanel {
 	private Connection con;
 	private String selectType; // Almacenara los tipos de servicios
@@ -18,8 +19,8 @@ public class mainAdmin extends JPanel {
 	// Pagina de perfil del usuario
 	public mainAdmin() {
 		con = bbdd.conectarBD();
-    	Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize(); // Obtener el tamaño de la pantalla
-        setPreferredSize(new Dimension(screenSize.width, screenSize.height)); // Establecer el tamaño preferido del panel
+    	Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize(); // Obtener el tamaÃ±o de la pantalla
+        setPreferredSize(new Dimension(screenSize.width, screenSize.height)); // Establecer el tamaÃ±o preferido del panel
 
         setLayout(new BorderLayout()); // Configurar el layout del panel
 
@@ -35,7 +36,7 @@ public class mainAdmin extends JPanel {
         add(formPanel);
         
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(10, 10, 10, 10); // Añadir espacio entre los componentes
+        gbc.insets = new Insets(10, 10, 10, 10); // AÃ±adir espacio entre los componentes
         gbc.gridx = 0;
         gbc.gridy = GridBagConstraints.RELATIVE; // Configurar el layout del formulario
         gbc.fill = GridBagConstraints.HORIZONTAL; // Ocupa toda la fila horizontalmente
@@ -57,7 +58,7 @@ public class mainAdmin extends JPanel {
 			}
         });
         
-        JButton addLocation = new JButton("A�adir una localizacion");
+        JButton addLocation = new JButton("Añadir una localizacion");
         addLocation.addActionListener(new ActionListener() {
         	// Se llama al metodo irSignUp que cambia la pagina a la de registro
         	public void actionPerformed(ActionEvent e) {
@@ -70,13 +71,32 @@ public class mainAdmin extends JPanel {
         addWeb.addActionListener(new ActionListener() {
         	// Se llama al metodo irSignUp que cambia la pagina a la de registro
         	public void actionPerformed(ActionEvent e) {
-        		addWeb();
+        		web();
 			}
         });
         formPanel.add(addWeb, gbc);  
+        
+        JButton addUser = new JButton("Agregar usuarios");
+        addUser.addActionListener(new ActionListener() {
+        	// Se llama al metodo irSignUp que cambia la pagina a la de registro
+        	public void actionPerformed(ActionEvent e) {
+        		users();
+			}
+        });
+        formPanel.add(addUser, gbc);  
+        
+        JButton addSede = new JButton("Agregar sede");
+        addSede.addActionListener(new ActionListener() {
+        	// Se llama al metodo irSignUp que cambia la pagina a la de registro
+        	public void actionPerformed(ActionEvent e) {
+        		sede();
+			}
+        });
+        formPanel.add(addSede, gbc);  
+        
     }
 	
-		// Metodo para volver al menú
+		// Metodo para volver al menÃº
 		public void volver() {
 			JFrame marco = (JFrame) SwingUtilities.getWindowAncestor(this);
 			marco.remove(this);
@@ -87,14 +107,7 @@ public class mainAdmin extends JPanel {
 		private void addLocation() {
 			JFrame marco = (JFrame) SwingUtilities.getWindowAncestor(this);
 			marco.remove(this);
-			marco.getContentPane().add(new addLocation());
-			marco.setVisible(true);
-		}
-		
-		private void addWeb() {
-			JFrame marco = (JFrame) SwingUtilities.getWindowAncestor(this);
-			marco.remove(this);
-			marco.getContentPane().add(new gestionWeb());
+			marco.getContentPane().add(new gestionLocation());
 			marco.setVisible(true);
 		}
 		
@@ -105,7 +118,36 @@ public class mainAdmin extends JPanel {
 			marco.setVisible(true);
 		}
 		
-		// Funcion para a�adir un servicio
+		private void users() {
+			JFrame marco = (JFrame) SwingUtilities.getWindowAncestor(this);
+			marco.remove(this);
+			marco.getContentPane().add(new gestionUser());
+			marco.setVisible(true);
+		}
+		
+		private void sede() {
+			JFrame marco = (JFrame) SwingUtilities.getWindowAncestor(this);
+			marco.remove(this);
+			marco.getContentPane().add(new gestionSede());
+			marco.setVisible(true);
+		}
+		
+		/*private void barri() {
+			JFrame marco = (JFrame) SwingUtilities.getWindowAncestor(this);
+			marco.remove(this);
+			marco.getContentPane().add(new gestionBarri());
+			marco.setVisible(true);
+		}
+		
+		//Metodo que enlaza con la pagina de creacion de clientes
+		private void cliente() {
+			JFrame marco = (JFrame) SwingUtilities.getWindowAncestor(this);
+			marco.remove(this);
+			marco.getContentPane().add(new gestionCliente());
+			marco.setVisible(true);
+		}*/
+		
+		// Funcion para añadir un servicio
 		public boolean addContractacio(ActionEvent e) {
 		    String CIF = JOptionPane.showInputDialog("Escribe tu CIF:");
 		    // Obtener los CIF de la bd
@@ -118,11 +160,11 @@ public class mainAdmin extends JPanel {
 		            // Si el CIF existe, realizamos el INSERT
 		            String insertQuery = "INSERT INTO CONTRACTACIO (DATAC, ESTAT, CIF) VALUES (?, ?, ?)";
 		            try (PreparedStatement insertStatement = con.prepareStatement(insertQuery)) {
-		            	insertStatement.setDate(1, java.sql.Date.valueOf(LocalDate.now())); // A�adir la fecha actual
+		            	insertStatement.setDate(1, java.sql.Date.valueOf(LocalDate.now())); // Aï¿½adir la fecha actual
 		                insertStatement.setString(2, "Activa"); // Establece el servicio contratado al estado Activa
 		                insertStatement.setString(3, CIF);
 		                insertStatement.executeUpdate();
-		                JOptionPane.showMessageDialog(this, "Se ha añadido un registro en la tabla contractacio");
+		                JOptionPane.showMessageDialog(this, "Se ha aÃ±adido un registro en la tabla contractacio");
 		                
 		                irService(e);
 		            }
@@ -138,7 +180,7 @@ public class mainAdmin extends JPanel {
 		    }
 		}
 		
-		// Metodo para añadir un servicio a la tabla SERV_CONTRACTAT
+		// Metodo para aÃ±adir un servicio a la tabla SERV_CONTRACTAT
 		public void irService(ActionEvent e) {
 			JFrame marco = (JFrame) SwingUtilities.getWindowAncestor(this);
 			marco.remove(this);
@@ -150,7 +192,7 @@ public class mainAdmin extends JPanel {
 		public boolean getService() {
 			loginAdmin LA = new loginAdmin(); // Crear una instancia de la classe loginAdmin(LA)
 		    
-			// Acceder a la variable privada a través del getter
+			// Acceder a la variable privada a travÃ©s del getter
 		    System.out.println("El username es: " + LA.getUsername());
 		    
 		    String username = LA.getUsername(); // Guardar el contenido de LA.getUsername()
