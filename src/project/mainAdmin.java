@@ -33,10 +33,10 @@ public class mainAdmin extends JPanel {
         JPanel formPanel = new JPanel();
         formPanel.setLayout(new GridBagLayout()); // Utilizar GridBagLayout para centrar los elementos
         
-        add(formPanel);
+        add(formPanel, BorderLayout.CENTER);
         
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(10, 10, 10, 10); // AÃ±adir espacio entre los componentes
+        gbc.insets = new Insets(5, 5, 5, 5); // Añadir espacio entre los componentes
         gbc.gridx = 0;
         gbc.gridy = GridBagConstraints.RELATIVE; // Configurar el layout del formulario
         gbc.fill = GridBagConstraints.HORIZONTAL; // Ocupa toda la fila horizontalmente
@@ -94,6 +94,24 @@ public class mainAdmin extends JPanel {
         });
         formPanel.add(addSede, gbc);  
         
+        JButton addBarri = new JButton("Agregar barrio");
+        addBarri.addActionListener(new ActionListener() {
+        	// Se llama al metodo irSignUp que cambia la pagina a la de registro
+        	public void actionPerformed(ActionEvent e) {
+        		barri();
+			}
+        });
+        formPanel.add(addBarri, gbc);  
+        
+        JButton addClient = new JButton("Agregar cliente");
+        addClient.addActionListener(new ActionListener() {
+
+        	public void actionPerformed(ActionEvent e) {
+        		cliente();
+			}
+        });
+        formPanel.add(addClient);
+        
     }
 	
 		// Metodo para volver al menÃº
@@ -132,20 +150,20 @@ public class mainAdmin extends JPanel {
 			marco.setVisible(true);
 		}
 		
-		/*private void barri() {
+		private void barri() {
 			JFrame marco = (JFrame) SwingUtilities.getWindowAncestor(this);
 			marco.remove(this);
 			marco.getContentPane().add(new gestionBarri());
 			marco.setVisible(true);
 		}
 		
-		//Metodo que enlaza con la pagina de creacion de clientes
 		private void cliente() {
 			JFrame marco = (JFrame) SwingUtilities.getWindowAncestor(this);
 			marco.remove(this);
 			marco.getContentPane().add(new gestionCliente());
 			marco.setVisible(true);
-		}*/
+		}
+
 		
 		// Funcion para añadir un servicio
 		public boolean addContractacio(ActionEvent e) {
