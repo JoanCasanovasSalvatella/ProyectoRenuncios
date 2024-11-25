@@ -59,7 +59,7 @@ public class addServicio extends JPanel {
         setLayout(new BorderLayout());
 
         // Etiqueta principal
-        JLabel label = new JLabel("AÒadir un servicio", JLabel.CENTER);
+        JLabel label = new JLabel("A√±adir un servicio", JLabel.CENTER);
         label.setFont(new Font("Arial", Font.BOLD, 30));
         add(label, BorderLayout.NORTH);
 
@@ -81,11 +81,11 @@ public class addServicio extends JPanel {
         
         // Desplegable para el tipo de servicio 
         formPanel.add(new JLabel("Tipo de servicio"), gbc);
-        // CreaciÛn del JComboBox con las opciones 
+        // Creaci√≥n del JComboBox con las opciones 
         JComboBox<String> comboBox = new JComboBox<>(new String[]{"Web", "Flyer", "Valla publicitaria"}); 
         formPanel.add(comboBox, gbc);
         
-        // ActionListener para manejar la selecciÛn del servicio 
+        // ActionListener para manejar la selecci√≥n del servicio 
         comboBox.addActionListener(new ActionListener() {
         	@Override public void actionPerformed(ActionEvent e) {
         		selectedService = (String) comboBox.getSelectedItem();
@@ -105,7 +105,24 @@ public class addServicio extends JPanel {
         
         // Desplegable para seleccionar un codigo postal
         formPanel.add(new JLabel("Codigo postal"), gbc);
-        comboCP = new JComboBox<>(new String[]{"25001", "25002", "25003", "25004", "25005", "25006"});
+
+        comboCP = new JComboBox<>();
+        String query = "SELECT CP FROM BARRI"; // Supongamos que la tabla contiene una columna llamada CP
+
+        try (PreparedStatement statement = con.prepareStatement(query);
+             ResultSet resultSet = statement.executeQuery()) {
+
+            while (resultSet.next()) {
+                String cp = resultSet.getString("CP"); // Obtener el c√≥digo postal
+
+                // A√±adir el CP al JComboBox
+                comboCP.addItem(cp);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error al cargar los c√≥digos postales desde la base de datos.");
+        }
         formPanel.add(comboCP, gbc);
 
         comboCP.addActionListener(new ActionListener() {
@@ -122,7 +139,7 @@ public class addServicio extends JPanel {
         
         // Desplegable para seleccionar una medida
         formPanel.add(new JLabel("Medida"), gbc);
-        JComboBox<String> comboMedida = new JComboBox<>(new String[]{"PequeÒo", "Mediano", "Grande"});
+        JComboBox<String> comboMedida = new JComboBox<>(new String[]{"Peque√±o", "Mediano", "Grande"});
         formPanel.add(comboMedida, gbc);
 
         comboMedida.addActionListener(new ActionListener() {
@@ -134,26 +151,34 @@ public class addServicio extends JPanel {
                 size = selectedSize; // use selectedPostalCode
             	}
         	});
-        
-		    // HashMap de las webs
-		    HashMap<String, Integer> webMap = new HashMap<>(); { 
-		    	webMap.put("Crunchyroll", 1); 
-		    	webMap.put("Amazon", 2); 
-		    	webMap.put("PCComponentes", 3);
-		    	webMap.put("Youtube", 4);
-		    	webMap.put("Twitch",5);
-		    }
         	
         	// Desplegable para seleccionar una web donde publicar
 	        formPanel.add(new JLabel("Web"), gbc);
-		    JComboBox<String> comboWebs = new JComboBox<>(new String[]{"Crunchyroll", "Amazon", "PCComponentes", "Youtube", "Twitch"});
+		    JComboBox<String> comboWebs = new JComboBox<>();
+		    
+		    String queryWeb = "SELECT NOM FROM WEB"; // Supongamos que la tabla contiene una columna llamada CP
+
+            try (PreparedStatement statementLoc = con.prepareStatement(queryWeb);
+                 ResultSet resultSetWeb = statementLoc.executeQuery()) {
+
+                while (resultSetWeb.next()) {
+                    String web = resultSetWeb.getString("NOM"); // Obtener el c√≥digo postal
+
+                    // A√±adir el CP al JComboBox
+                    comboWebs.addItem(web);
+                }
+
+            } catch (SQLException e) {
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(this, "Error al cargar los datos desde la base de datos.");
+            }
 		    formPanel.add(comboWebs, gbc);
 		
-		    // ActionListener para manejar la selecciÛn de la web 
+		    // ActionListener para manejar la selecci√≥n de la web 
 		    comboWebs.addActionListener(new ActionListener() {
 	        	@Override public void actionPerformed(ActionEvent e) {
 	        		selectedWeb = (String) comboWebs.getSelectedItem();// Obtener la web elejida
-	        		webID = webMap.get(selectedWeb);
+	        		webID = (Integer) comboWebs.getSelectedItem();
 	        		if (webID != null) {
 	        			selectedWebResult = selectedWeb; 
 	        			
@@ -168,12 +193,28 @@ public class addServicio extends JPanel {
 
 		    // Desplegable para seleccionar una localizacion
 		    formPanel.add(new JLabel("Localizacion(Solo para flyers y vallas publicitarias)"), gbc);
-            comboLocation = new JComboBox<>(new String[]{"Cappont", "Escorxador", "Magraners", "Bal‡fia", "Pardinyes", "Seca de Sant Pere"});
+            comboLocation = new JComboBox<>();
+            String queryLoc = "SELECT DESCRIPCIO FROM LOCALITZACIO"; // Supongamos que la tabla contiene una columna llamada CP
+
+            try (PreparedStatement statementLoc = con.prepareStatement(queryLoc);
+                 ResultSet resultSetLoc = statementLoc.executeQuery()) {
+
+                while (resultSetLoc.next()) {
+                    String desc = resultSetLoc.getString("DESCRIPCIO"); // Obtener el c√≥digo postal
+
+                    // A√±adir el CP al JComboBox
+                    comboLocation.addItem(desc);
+                }
+
+            } catch (SQLException e) {
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(this, "Error al cargar los c√≥digos postales desde la base de datos.");
+            }
             formPanel.add(comboLocation, gbc);
             
-            // Desplegable para seleccionar un estilo de impresiÛn
+            // Desplegable para seleccionar un estilo de impresi√≥n
             formPanel.add(new JLabel("Color(Solo para flyers)"), gbc);
-            comboColor = new JComboBox<>(new String[]{"Si", "No"}); // InicializaciÛn y asignaciÛn
+            comboColor = new JComboBox<>(new String[]{"Si", "No"}); // Inicializaci√≥n y asignaci√≥n
             formPanel.add(comboColor, gbc);
             
             
@@ -194,7 +235,7 @@ public class addServicio extends JPanel {
 		            }
 		        }
 		    });
-		    formPanel.add(selectImageButton, gbc); // Agregar el bot√≥n al panel
+		    formPanel.add(selectImageButton, gbc); // Agregar el bot√É¬≥n al panel
 		    
 		    JButton Contratar = new JButton("Contratar servicio");
 		    Contratar.addActionListener(new ActionListener() {
@@ -241,7 +282,7 @@ public class addServicio extends JPanel {
     }   
     
     public boolean insertService(String size, File imageFile) {
-        String queryNumC = "SELECT MAX(NUMC) FROM CONTRACTACIO";//Seleccionar el ultimo numC aÒadido
+        String queryNumC = "SELECT MAX(NUMC) FROM CONTRACTACIO";//Seleccionar el ultimo numC a√±adido
         
         
         // Obtener el ultimo NUMC
@@ -267,7 +308,7 @@ public class addServicio extends JPanel {
 
         // Validar fechas
         if (dateS == null || dateF == null || dateS.isEmpty() || dateF.isEmpty()) {
-            JOptionPane.showMessageDialog(null, "Las fechas no pueden estar vacÌas.");
+            JOptionPane.showMessageDialog(null, "Las fechas no pueden estar vac√≠as.");
         }
         
         //Realizar un insert dependiendo del tipo de servicio
@@ -289,7 +330,7 @@ public class addServicio extends JPanel {
 
                 int price = 0;// Variable para el precio(Establecera uno dependiendo de la medida)
                 
-                if ("PequeÒo".equals(size)) {
+                if ("Peque√±o".equals(size)) {
                     price = 10;
                 } 
                 
@@ -303,7 +344,7 @@ public class addServicio extends JPanel {
                 
                 // Mensaje de error
                 else {
-                    JOptionPane.showMessageDialog(null, "TamaÒo no valido");
+                    JOptionPane.showMessageDialog(null, "Tama√±o no valido");
                 }
 
                 statementWeb.setInt(7, price);
@@ -343,7 +384,7 @@ public class addServicio extends JPanel {
         }
         
         if (selectedServiceType.equals("Valla publicitaria")) {
-            // Obtener el id de la ubicaciÛn escogida
+            // Obtener el id de la ubicaci√≥n escogida
             String queryLocation = "SELECT NUML FROM LOCALITZACIO WHERE DESCRIPCIO = ?";
 
             try (PreparedStatement statement = con.prepareStatement(queryLocation)) {
@@ -355,7 +396,7 @@ public class addServicio extends JPanel {
                 try (ResultSet rs = statement.executeQuery()) {
                     if (rs.next()) {
                         int numL = rs.getInt("NUML");
-                        System.out.println("ID de ubicaciÛn: " + numL); // *Debug*
+                        System.out.println("ID de ubicaci√≥n: " + numL); // *Debug*
 
                         String txt = JOptionPane.showInputDialog(null, "Texto a mostrar en la valla publicitaria");
 
@@ -382,7 +423,7 @@ public class addServicio extends JPanel {
                                 case "Magraners":
                                     LP = 60;
                                     
-                                case "Bal‡fia":
+                                case "Bal√†fia":
                                     LP = 65;
                                     
                                 case "Pardinyes":
@@ -397,19 +438,19 @@ public class addServicio extends JPanel {
                             statementVP.setString(8, "Mensual");
                             statementVP.setInt(9, numL);
 
-                            statementVP.executeUpdate(); // Ejecutar la inserciÛn
+                            statementVP.executeUpdate(); // Ejecutar la inserci√≥n
                             JOptionPane.showMessageDialog(null, "Valla publicitaria solicitada exitosamente"); // Mensaje indicando que se ha insertado correctamente
                             
                             insertTicket("Mensual", 'N'); //Llamar al metodo para insertar una linea en el tiquet
                             
                             
                         } catch (FileNotFoundException e) {
-                            JOptionPane.showMessageDialog(null, "No se encontrÛ la imagen proporcionada.");
+                            JOptionPane.showMessageDialog(null, "No se encontr√≥ la imagen proporcionada.");
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
                     } else {
-                        JOptionPane.showMessageDialog(null, "No se encontrÛ la ubicaciÛn con la descripciÛn proporcionada.");
+                        JOptionPane.showMessageDialog(null, "No se encontr√≥ la ubicaci√≥n con la descripci√≥n proporcionada.");
                     }
                 } catch (SQLException e) {
                     JOptionPane.showMessageDialog(null, "La consulta ha fallado: " + e.getMessage());
@@ -465,7 +506,7 @@ public class addServicio extends JPanel {
                 statement.setString(8, "Unico");
                 statement.setString(9,selectedCP);
                 
-                statement.executeUpdate(); // Ejecutar la inserciÛn
+                statement.executeUpdate(); // Ejecutar la inserci√≥n
                 JOptionPane.showMessageDialog(null, "Flyer solicitada exitosamente"); // Mensaje indicando que se ha insertado correctamente
                 
                 insertTicket("Unico", 'N'); //Llamar al metodo para insertar una linea en el tiquet
@@ -478,9 +519,9 @@ public class addServicio extends JPanel {
         return false;    
     }	
     
-    // Metodo para aÒadir una linea al tiquet
+    // Metodo para a√±adir una linea al tiquet
     public void insertTicket(String mesAny, char pagat) {  
-    	String slctNumC = "SELECT MAX(NUMC), MAX(NUMS) FROM SERV_CONTRACTAT";//Seleccionar el ultimo numC u numS de la tabla de servicios aÒadido
+    	String slctNumC = "SELECT MAX(NUMC), MAX(NUMS) FROM SERV_CONTRACTAT";//Seleccionar el ultimo numC u numS de la tabla de servicios a√±adido
         
         // Obtener el ultimo NUMC
         try (PreparedStatement statement = con.prepareStatement(slctNumC)){
@@ -500,9 +541,9 @@ public class addServicio extends JPanel {
         		    	statementTIQ.setInt(3, numContract);
         		       	statementTIQ.setInt(4, numServei);
         		       	
-        		       	// Ejecutar la inserciÛn 
+        		       	// Ejecutar la inserci√≥n 
         		       	statementTIQ.executeUpdate(); 
-        		       	System.out.println("LÌnea aÒadida al recibo."); // DEBUG
+        		       	System.out.println("L√≠nea a√±adida al recibo."); // DEBUG
         		       	
         		    	} catch (SQLException e) {
         		    	  e.printStackTrace();  

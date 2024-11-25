@@ -93,7 +93,7 @@ public class loginAdmin extends JPanel implements ActionListener{
             // Usuario válido, continuar al siguiente panel
         	JFrame marco = (JFrame) SwingUtilities.getWindowAncestor(this);
     		marco.remove(this);
-    		marco.getContentPane().add(new mainUser());
+    		marco.getContentPane().add(new mainAdmin());
     		marco.setVisible(true);
         } else {
             JOptionPane.showMessageDialog(null, "El usuario o la contraseña no es correcta.");

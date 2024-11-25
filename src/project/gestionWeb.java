@@ -131,7 +131,7 @@ public class gestionWeb extends JPanel implements ActionListener {
         });
         formPanel2.add(confirmButton, gbc2);
 
-        // Bot�n de volver atr�s en el segundo formulario
+        // Boton de volver atras en el segundo formulario
         JButton backButton2 = new JButton("Volver atras");
         backButton2.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -176,7 +176,7 @@ public class gestionWeb extends JPanel implements ActionListener {
         		String nameWeb = web.getText();
         		String webUrl = url.getText();
         		
-        		// Obtener el ultimo NUMC
+        		// Obtener el ultimo NUMW
                 try (PreparedStatement statement = con.prepareStatement(numWOld)){
                 	ResultSet resultSet = statement.executeQuery();//Ejecutar la consulta
                 	    
@@ -185,6 +185,7 @@ public class gestionWeb extends JPanel implements ActionListener {
                 	        newNumW = numW + 1;
                 	    }
                 	else {
+                		newNumW = 1;
                 		JOptionPane.showMessageDialog(null, "La consulta no ha devuelto ningun resultado");
                 	}
                 	
@@ -204,7 +205,7 @@ public class gestionWeb extends JPanel implements ActionListener {
         			statementWeb.setInt(6, 40);
         		
         			int result = statementWeb.executeUpdate(); //Ejecutar el insert
-        			JOptionPane.showMessageDialog(null, "Web a�adida exitosamente");
+        			JOptionPane.showMessageDialog(null, "Web añadida exitosamente");
         		}
         		catch (SQLException e1) {
         			JOptionPane.showMessageDialog(null, "Error al añadir una localizacion");
@@ -221,7 +222,7 @@ public class gestionWeb extends JPanel implements ActionListener {
         add(mainPanel, BorderLayout.CENTER); // A�adir el panel con los formularios al panel principal
         }
 
-    // M�todo para volver al men�
+    // Metodo para volver al men�
     public void volver() {
         JFrame marco = (JFrame) SwingUtilities.getWindowAncestor(this);
         marco.remove(this);

@@ -1,4 +1,5 @@
 
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -59,6 +60,16 @@ public class loginCliente extends JPanel implements ActionListener{
         });
         
         formPanel.add(loginADM, gbc);
+        
+        JButton delUsr = new JButton("Eliminar mi cuenta");
+        delUsr.addActionListener(new ActionListener() {
+        	// Se llama al metodo irSignUp que cambia la pagina a la de registro
+        	public void actionPerformed(ActionEvent e) {
+        		delUSR();
+			}
+        });
+        
+        formPanel.add(delUsr, gbc);
 
         add(formPanel, BorderLayout.CENTER); // Añadir el formulario al panel principal
 
@@ -152,6 +163,40 @@ public class loginCliente extends JPanel implements ActionListener{
 		marco.getContentPane().add(new registerUser());
 		marco.setVisible(true);
 	}
+	
+	// Metodo para enlazar con el archivo de registro para administradores
+	public void delUSR() {
+	    // Pedir el usuario a eliminar
+	    String user = JOptionPane.showInputDialog(null, "Usuario a eliminar");
+
+	    // Consulta para verificar si el usuario existe
+	    String checkUserQuery = "SELECT USUARI FROM USUARI WHERE USUARI = ?";
+	    String deleteUserQuery = "DELETE FROM USUARI WHERE USUARI = ?";
+
+	    try (PreparedStatement checkStmt = con.prepareStatement(checkUserQuery)) {
+	        checkStmt.setString(1, user);
+	        try (ResultSet resultSet = checkStmt.executeQuery()) {
+	            if (resultSet.next()) {
+	                // El usuario existe, proceder a eliminarlo
+	                try (PreparedStatement deleteStmt = con.prepareStatement(deleteUserQuery)) {
+	                    deleteStmt.setString(1, user);
+	                    int rowsAffected = deleteStmt.executeUpdate(); // Ejecutar eliminación
+	                    if (rowsAffected > 0) {
+	                        JOptionPane.showMessageDialog(null, "Usuario eliminado correctamente.");
+	                    } else {
+	                        JOptionPane.showMessageDialog(null, "No se pudo eliminar el usuario.");
+	                    }
+	                }
+	            } else {
+	                JOptionPane.showMessageDialog(null, "El usuario no existe.");
+	            }
+	        }
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	        JOptionPane.showMessageDialog(null, "Ocurrió un error al eliminar el usuario.");
+	    }
+	}
+
 	
 	// Metodo para volver al menú
 	public void volver() {

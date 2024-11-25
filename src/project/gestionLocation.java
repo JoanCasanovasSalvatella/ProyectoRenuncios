@@ -38,7 +38,7 @@ public class gestionLocation extends JPanel implements ActionListener{
         setLayout(new BorderLayout()); // Configurar el layout del panel
 
         // Configurar el encabezado
-        JLabel label = new JLabel("Gestion sede", JLabel.CENTER);
+        JLabel label = new JLabel("Gestion de localizaciones", JLabel.CENTER);
         label.setFont(new Font("Arial", Font.BOLD, 30));
         add(label, BorderLayout.NORTH);
 
@@ -153,7 +153,7 @@ public class gestionLocation extends JPanel implements ActionListener{
         formPanel3.add(inputCord, gbc);
         
         JButton confirmAdd = new JButton("Confirmar");
-        formPanel3.add(confirmAdd);
+        formPanel3.add(confirmAdd, gbc);
         confirmAdd.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 addLocation();

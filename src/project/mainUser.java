@@ -6,167 +6,152 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 
+
+// Menú que vera el usuario al iniciar sesion exitosamente
 public class mainUser extends JPanel {
-    private Connection con;
-    private String selectType;
-    private String selectColor;
-    private String cp;
+	private Connection con;
+	private String selectType; // Almacenara los tipos de servicios
+	private String selectColor; // Almacenara si el anuncio es a color o en blanco y negro
+	private String cp; // Almacenara los codigos postales
+	
+	// Pagina de perfil del usuario
+	public mainUser() {
+		con = bbdd.conectarBD();
+    	Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize(); // Obtener el tamaño de la pantalla
+        setPreferredSize(new Dimension(screenSize.width, screenSize.height)); // Establecer el tamaño preferido del panel
 
-    public mainUser() {
-        con = bbdd.conectarBD();
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        setPreferredSize(new Dimension(screenSize.width, screenSize.height));
-        setLayout(null);
+        setLayout(new BorderLayout()); // Configurar el layout del panel
 
+        // Configurar los diferentes componentes
         JLabel label = new JLabel("Perfil de usuario", JLabel.CENTER);
         label.setFont(new Font("Arial", Font.BOLD, 30));
-        label.setBounds(screenSize.width / 2 - 200, 50, 400, 40);
-        add(label);
+        add(label, BorderLayout.NORTH);
 
-        JButton backButton = new JButton("Volver atrás");
-        backButton.setBounds(screenSize.width / 2 - 100, 150, 200, 30);
-        backButton.addActionListener(e -> volver());
-        add(backButton);
+        // Crear un panel para el formulario
+        JPanel formPanel = new JPanel();
+        formPanel.setLayout(new GridBagLayout()); // Utilizar GridBagLayout para centrar los elementos
+        
+        add(formPanel);
+        
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(10, 10, 10, 10); // Añadir espacio entre los componentes
+        gbc.gridx = 0;
+        gbc.gridy = GridBagConstraints.RELATIVE; // Configurar el layout del formulario
+        gbc.fill = GridBagConstraints.HORIZONTAL; // Ocupa toda la fila horizontalmente
 
+        // Boton que vuelve al menu anterior
+        JButton backButton = new JButton("Volver atras");
+        backButton.addActionListener(new ActionListener() {
+        	// Se llama al metodo irSignUp que cambia la pagina a la de registro
+        	public void actionPerformed(ActionEvent e) {
+        		volver();
+			}
+        });
+        
+        // Boton para añadir un servicio
         JButton solicitar = new JButton("Solicitar un servicio");
-        solicitar.setBounds(screenSize.width / 2 - 100, 200, 200, 30);
-        solicitar.addActionListener(this::addContractacio);
-        add(solicitar);
-
-        JLabel myServices = new JLabel("Mis Servicios");
-        myServices.setBounds(screenSize.width / 2 - 100, 250, 200, 30);
-        add(myServices);
-
-        try (Connection conn = bbdd.conectarBD();
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery("SELECT NUMC, NUMS, TIPUS, DATAL, DATAF, PREU, PAGAMENT FROM SERV_CONTRACTAT")) {
-
-            ArrayList<ListaServicios> listaServicios = new ArrayList<>();
-
-            while (rs.next()) {
-                listaServicios.add(new ListaServicios(
-                    rs.getInt("NUMC"),
-                    rs.getInt("NUMS"),
-                    rs.getString("TIPUS"),
-                    rs.getString("DATAL"),
-                    rs.getString("DATAF"),
-                    rs.getInt("PREU"),
-                    rs.getString("PAGAMENT")
-                ));
-            }
-
-            int y = 300;
-            int i = 1;
-            for (ListaServicios servicios : listaServicios) {
-                JLabel labelServicio = new JLabel(i + ". " + servicios);
-                labelServicio.setForeground(Color.BLACK);
-                labelServicio.setFont(new Font("Courier New", Font.BOLD | Font.ITALIC, 20));
-                labelServicio.setBounds(200, y, 1000, 30); // Ampliado el ancho
-                add(labelServicio);
-                y += 40;
-                i++;
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Error al obtener los datos de la base de datos.");
-        }
+        formPanel.add(solicitar);
+        solicitar.addActionListener(new ActionListener() {
+        	// Se llama al metodo irSignUp que cambia la pagina a la de registro
+        	public void actionPerformed(ActionEvent e) {
+        		addContractacio(e);
+			}
+        });
+        
+        JLabel myServices = new JLabel("Servicios activos");
+        // Llamar al metodo que selecciona todas las columnas de un usuario
+        
+        formPanel.add(backButton, gbc);
+        
+        JButton ticketGenerator = new JButton("Generar un tiquet");
+        ticketGenerator.addActionListener(new ActionListener() {
+        	// Se llama al metodo irSignUp que cambia la pagina a la de registro
+        	public void actionPerformed(ActionEvent e) {
+        		addContractacio(e);
+			}
+        });
     }
+	
+		// Metodo para volver al menú
+		public void volver() {
+			JFrame marco = (JFrame) SwingUtilities.getWindowAncestor(this);
+			marco.remove(this);
+			marco.getContentPane().add(new loginAdmin());
+			marco.setVisible(true);
+		}
+		
+		// Funcion para a�adir un servicio
+		public boolean addContractacio(ActionEvent e) {
+		    String CIF = JOptionPane.showInputDialog("Escribe tu CIF:");
+		    // Obtener los CIF de la bd
+		    String queryCIF = "SELECT CIF FROM CLIENT WHERE CIF = ?"; // Seleccionar la fila donde el CIF sea el introducido por teclado
+		    try (PreparedStatement statement = con.prepareStatement(queryCIF)) {
+		        statement.setString(1, CIF); // Buscar cualquier registro en el que el cif coincida
+		        ResultSet resultSet = statement.executeQuery();
 
-    private static class ListaServicios {
-        private int numc;
-        private int nums;
-        private String tipus;
-        private String datal;
-        private String dataf;
-        private int preu;
-        private String pagament;
+		        if (resultSet.next()) {
+		            // Si el CIF existe, realizamos el INSERT
+		            String insertQuery = "INSERT INTO CONTRACTACIO ( DATAC, ESTAT, CIF) VALUES (?, ?, ?)";
+		            try (PreparedStatement insertStatement = con.prepareStatement(insertQuery)) {
+		            	insertStatement.setDate(1, java.sql.Date.valueOf(LocalDate.now())); // A�adir la fecha actual
+		                insertStatement.setString(2, "Activa"); // Establece el servicio contratado al estado solicitado
+		                insertStatement.setString(3, CIF);
+		                insertStatement.executeUpdate();
+		                JOptionPane.showMessageDialog(this, "Se ha añadido un registro en la tabla contractacio");
+		                
+		                irService(e);
+		            }
+		            return true; // Devuelve true si se realiza el insert
+		        } else {
+		            JOptionPane.showMessageDialog(this, "No existe el CIF especificado");
+		            return false;
+		        }
+		    } catch (SQLException e2) {
+		        e2.printStackTrace();
+		        JOptionPane.showMessageDialog(this, "Error inesperado: " + e2.getMessage());
+		        return false; // En caso de error, devuelve falso
+		    }
+		}
+		
+		// Metodo para añadir un servicio a la tabla SERV_CONTRACTAT
+		public void irService(ActionEvent e) {
+			JFrame marco = (JFrame) SwingUtilities.getWindowAncestor(this);
+			marco.remove(this);
+			marco.getContentPane().add(new addServicio());
+			marco.setVisible(true);
+		}
 
-        public ListaServicios(int numc, int nums, String tipus, String datal, String dataf, int preu, String pagament) {
-            this.numc = numc;
-            this.nums = nums;
-            this.tipus = tipus;
-            this.datal = datal;
-            this.dataf = dataf;
-            this.preu = preu;
-            this.pagament = pagament;
-        }
+		
+		public boolean getService() {
+			loginAdmin LA = new loginAdmin(); // Crear una instancia de la classe loginAdmin(LA)
+		    
+			// Acceder a la variable privada a través del getter
+		    System.out.println("El username es: " + LA.getUsername());
+		    
+		    String username = LA.getUsername(); // Guardar el contenido de LA.getUsername()
+	    	
+	        String query = "SELECT USUARI, CIF FROM USUARI WHERE USUARI = ?";
+	        
+	        try (PreparedStatement statement = con.prepareStatement(query)) {
+	            statement.setString(1, username);
+	            ResultSet resultSet = statement.executeQuery();
 
-        @Override
-        public String toString() {
-            return numc + ", " + nums + ", " + tipus + ", " + datal + ", " + dataf + ", " + preu + ", " + pagament;
-        }
-    }
-
- // Método para volver al menú
- public void volver() {
-     JFrame marco = (JFrame) SwingUtilities.getWindowAncestor(this);
-     marco.remove(this);
-     marco.getContentPane().add(new loginAdmin());
-     marco.setVisible(true);
- }
-
- // Función para añadir un servicio
- public boolean addContractacio(ActionEvent e) {
-     String CIF = JOptionPane.showInputDialog("Escribe tu CIF:");
-     String queryCIF = "SELECT CIF FROM CLIENT WHERE CIF = ?"; // Seleccionar la fila donde el CIF sea el introducido por teclado
-     try (PreparedStatement statement = con.prepareStatement(queryCIF)) {
-         statement.setString(1, CIF);
-         ResultSet resultSet = statement.executeQuery();
-         if (resultSet.next()) {
-             String insertQuery = "INSERT INTO CONTRACTACIO (DATAC, ESTAT, CIF) VALUES (?, ?, ?)";
-             try (PreparedStatement insertStatement = con.prepareStatement(insertQuery)) {
-                 insertStatement.setDate(1, java.sql.Date.valueOf(LocalDate.now())); // Añadir la fecha actual
-                 insertStatement.setString(2, "Solicitado");
-                 insertStatement.setString(3, CIF);
-                 insertStatement.executeUpdate();
-                 JOptionPane.showMessageDialog(this, "Se ha añadido un registro en la tabla contractacio");
-                 irService(e);
-             }
-             return true;
-         } else {
-             JOptionPane.showMessageDialog(this, "No existe el CIF especificado");
-             return false;
-         }
-     } catch (SQLException e2) {
-         e2.printStackTrace();
-         JOptionPane.showMessageDialog(this, "Error inesperado: " + e2.getMessage());
-         return false;
-     }
- }
-
- // Método para añadir un servicio a la tabla SERV_CONTRACTAT
- public void irService(ActionEvent e) {
-     JFrame marco = (JFrame) SwingUtilities.getWindowAncestor(this);
-     marco.remove(this);
-     marco.getContentPane().add(new addServicio());
-     marco.setVisible(true);
- }
-
- public boolean getService() {
-     loginAdmin LA = new loginAdmin(); // Crear una instancia de la clase loginAdmin(LA)
-     System.out.println("El username es: " + LA.getUsername());
-     String username = LA.getUsername();
-     String query = "SELECT USUARI, CIF FROM USUARI WHERE USUARI = ?";
-     try (PreparedStatement statement = con.prepareStatement(query)) {
-         statement.setString(1, username);
-         ResultSet resultSet = statement.executeQuery();
-         if (resultSet.next()) {
-             return true;
-         } else {
-             JOptionPane.showMessageDialog(this, "No existe el usuario");
-             return false;
-         }
-     } catch (SQLException e) {
-         e.printStackTrace();
-         JOptionPane.showMessageDialog(this, "Error inesperado: " + e.getMessage());
-         return false;
-     }
- }
-}
+	            if (resultSet.next()) {
+	            	//String query = "SELECT * FROM SERV_CONTRACTAT";
+	            	for(int i=0; i < query.length(); i++) {
+	            		System.out.println("");
+	            	}
+	                return true; // Devuelve true si hay al menos una fila
+	            } else {
+	                JOptionPane.showMessageDialog(this, "No existe el usuario");
+	                return false;
+	            }
+	        } catch (SQLException e) {
+	            e.printStackTrace();
+	            JOptionPane.showMessageDialog(this, "Error inesperado: " + e.getMessage());
+	            return false; // En caso de error, devuelve falso
+	        }
+		}
+	}
