@@ -24,8 +24,8 @@ public class registerUser extends JPanel {
 	public registerUser() {
 		con = bbdd.conectarBD();
 		
-    	Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize(); // Obtener el tama�o de la pantalla
-        setPreferredSize(new Dimension(screenSize.width, screenSize.height)); // Establecer el tama�o preferido del panel
+    	Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize(); // Obtener el tamaño de la pantalla
+        setPreferredSize(new Dimension(screenSize.width, screenSize.height)); // Establecer el tamaño preferido del panel
 
         setLayout(new BorderLayout()); // Configurar el layout del panel
 
@@ -39,7 +39,7 @@ public class registerUser extends JPanel {
         formPanel.setLayout(new GridBagLayout()); // Utilizar GridBagLayout para centrar los elementos
         
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(10, 10, 10, 10); // A�adir espacio entre los componentes
+        gbc.insets = new Insets(10, 10, 10, 10); // Añadir espacio entre los componentes
         gbc.gridx = 0;
         gbc.gridy = GridBagConstraints.RELATIVE; // Configurar el layout del formulario
         gbc.fill = GridBagConstraints.HORIZONTAL; // Ocupa toda la fila horizontalmente
@@ -51,7 +51,7 @@ public class registerUser extends JPanel {
         username = new JTextField(20);
         formPanel.add(username, gbc);
         
-        JLabel passwdLbl = new JLabel("Contrase�a");
+        JLabel passwdLbl = new JLabel("Contraseña");
         passwdLbl.setFont(new Font("Arial", Font.BOLD, 18));
         formPanel.add(passwdLbl, gbc);
         
@@ -100,8 +100,7 @@ public class registerUser extends JPanel {
                 String selectedSede = (String) comboBox.getSelectedItem();
                 // Obtener el ID desde el mapa
                 sedeID = sedesMap.get(selectedSede);
-                selecionarSede = selectedSede;  // Opcional: guardar el nombre si lo necesitas
-                // Aqu� puedes usar el ID para lo que necesites (guardar en base de datos, etc.)
+                selecionarSede = selectedSede;
             }
         });
         
@@ -110,14 +109,14 @@ public class registerUser extends JPanel {
         loginADM.addActionListener(new ActionListener() {
         	// Se llama al metodo irSignUp que cambia la pagina a la de registro
         	public void actionPerformed(ActionEvent e) {
+        		//insertarUsuario();
         		insertarCliente();
-        		insertarUsuario();
 			}
         });
         
         formPanel.add(loginADM, gbc);
 
-        add(formPanel, BorderLayout.CENTER); // A�adir el formulario al panel principal
+        add(formPanel, BorderLayout.CENTER); // Añadir el formulario al panel principal
 
         // Boton que vuelve al menu anterior
         JButton backButton = new JButton("Volver atras");
@@ -131,7 +130,7 @@ public class registerUser extends JPanel {
         formPanel.add(backButton, gbc);
     }
 	
-	// Metodo para volver al men�
+	// Metodo para volver al menú
 		public void volver() {
 			JFrame marco = (JFrame) SwingUtilities.getWindowAncestor(this);
 			marco.remove(this);
@@ -139,24 +138,24 @@ public class registerUser extends JPanel {
 			marco.setVisible(true);
 		}
 		
-		// M�todo para insertar un nuevo usuario en la base de datos
+		// Método para insertar un nuevo usuario en la base de datos
 	    public boolean insertarUsuario() {
 			usuario = username.getText().trim();
-            String contrasena = passwd.getText().trim();
+            String contraseña = passwd.getText().trim();
             role = "Cliente";
             
-            if (usuario.isEmpty() || contrasena.isEmpty()) {
-                JOptionPane.showMessageDialog(null, "Por favor, introduzca un nombre y una contrase�a.", "Error", JOptionPane.ERROR_MESSAGE);
+            if (usuario.isEmpty() || contraseña.isEmpty()) {
+                JOptionPane.showMessageDialog(null, "Por favor, introduzca un nombre y una contraseña.", "Error", JOptionPane.ERROR_MESSAGE);
             }
             
             if (usuarioExiste(usuario)) {
-                JOptionPane.showMessageDialog(null, "El usuario ya est� registrado.", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(null, "El usuario ya está registrado.", "Error", JOptionPane.ERROR_MESSAGE);
             }
             
 	        String query = "INSERT INTO USUARI(USUARI, PW, ROL) VALUES (?,?,?)";
 	        try (PreparedStatement statement = con.prepareStatement(query)) {
 	            statement.setString(1, usuario);
-	            statement.setString(2, contrasena);
+	            statement.setString(2, contraseña);
 	            statement.setString(3, role);
 	            int rowCount = statement.executeUpdate();
 	            // Mostrar un mensaje conforme se ha insertado correctamente
@@ -169,7 +168,7 @@ public class registerUser extends JPanel {
 	        return false;
 	    }
 	    
-	 // M�todo para insertar un nuevo usuario en la base de datos
+	    // Método para insertar un nuevo usuario en la base de datos
 	    public boolean insertarCliente() {
 	        String cf = cif.getText().trim();
             String company = empresa.getText().trim();
