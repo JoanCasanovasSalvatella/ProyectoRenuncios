@@ -40,23 +40,6 @@ public class mainAdmin extends JPanel {
         gbc.gridx = 0;
         gbc.gridy = GridBagConstraints.RELATIVE; // Configurar el layout del formulario
         gbc.fill = GridBagConstraints.HORIZONTAL; // Ocupa toda la fila horizontalmente
-
-        // Boton que vuelve al menu anterior
-        JButton backButton = new JButton("Volver atras");
-        backButton.addActionListener(new ActionListener() {
-        	// Se llama al metodo irSignUp que cambia la pagina a la de registro
-        	public void actionPerformed(ActionEvent e) {
-        		volver();
-			}
-        });
-        
-        JButton ticketGenerator = new JButton("Gestionar una web");
-        ticketGenerator.addActionListener(new ActionListener() {
-        	// Se llama al metodo irSignUp que cambia la pagina a la de registro
-        	public void actionPerformed(ActionEvent e) {
-        		web();
-			}
-        });
         
         JButton addLocation = new JButton("Añadir una localizacion");
         addLocation.addActionListener(new ActionListener() {
@@ -110,8 +93,17 @@ public class mainAdmin extends JPanel {
         		cliente();
 			}
         });
-        formPanel.add(addClient);
+        formPanel.add(addClient, gbc);
         
+        // Boton que vuelve al menu anterior
+        JButton backButton = new JButton("Volver atras");
+        backButton.addActionListener(new ActionListener() {
+        	// Se llama al metodo irSignUp que cambia la pagina a la de registro
+        	public void actionPerformed(ActionEvent e) {
+        		volver();
+			}
+        });
+        formPanel.add(backButton, gbc); 
     }
 	
 		// Metodo para volver al menÃº
