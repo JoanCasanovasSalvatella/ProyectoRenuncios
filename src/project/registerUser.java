@@ -141,10 +141,10 @@ public class registerUser extends JPanel {
 		// Método para insertar un nuevo usuario en la base de datos
 	    public boolean insertarUsuario() {
 			usuario = username.getText().trim();
-            String contraseña = passwd.getText().trim();
+            String contrasena = passwd.getText().trim();
             role = "Cliente";
             
-            if (usuario.isEmpty() || contraseña.isEmpty()) {
+            if (usuario.isEmpty() || contrasena.isEmpty()) {
                 JOptionPane.showMessageDialog(null, "Por favor, introduzca un nombre y una contraseña.", "Error", JOptionPane.ERROR_MESSAGE);
             }
             
@@ -155,7 +155,7 @@ public class registerUser extends JPanel {
 	        String query = "INSERT INTO USUARI(USUARI, PW, ROL) VALUES (?,?,?)";
 	        try (PreparedStatement statement = con.prepareStatement(query)) {
 	            statement.setString(1, usuario);
-	            statement.setString(2, contraseña);
+	            statement.setString(2, contrasena);
 	            statement.setString(3, role);
 	            int rowCount = statement.executeUpdate();
 	            // Mostrar un mensaje conforme se ha insertado correctamente
