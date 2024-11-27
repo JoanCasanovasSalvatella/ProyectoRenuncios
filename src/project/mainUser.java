@@ -23,8 +23,7 @@ public class mainUser extends JPanel {
 	public mainUser() {
 		con = bbdd.conectarBD();
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize(); // Obtener el tamaño de la pantalla
-		setPreferredSize(new Dimension(screenSize.width, screenSize.height)); // Establecer el tamaño preferido del
-																				// panel
+		setPreferredSize(new Dimension(screenSize.width, screenSize.height)); // Establecer el tamaño preferido del															// panel
 
 		setLayout(new BorderLayout()); // Configurar el layout del panel
 
@@ -45,8 +44,6 @@ public class mainUser extends JPanel {
 		gbc.gridy = GridBagConstraints.RELATIVE; // Configurar el layout del formulario
 		gbc.fill = GridBagConstraints.HORIZONTAL; // Ocupa toda la fila horizontalmente
 
-		
-
 		// Boton para añadir un servicio
 		JButton solicitar = new JButton("Solicitar un servicio");
 		formPanel.add(solicitar);
@@ -56,6 +53,7 @@ public class mainUser extends JPanel {
 				addContractacio(e);
 			}
 		});
+		formPanel.add(solicitar, gbc);
 
 		JButton myServices = new JButton("Ver mis servicios");
 		// Llamar al metodo que selecciona todas las columnas de un usuario
@@ -64,11 +62,20 @@ public class mainUser extends JPanel {
 				seeServices();
 			}
 		});
-
 		formPanel.add(myServices, gbc);
 		
 		// Boton que vuelve al menu anterior
-		JButton backButton = new JButton("Cerrar sessión");
+		JButton consultar = new JButton("Ver mis tickets");
+		consultar.addActionListener(new ActionListener() {
+		// Se llama al metodo irSignUp que cambia la pagina a la de registro
+		public void actionPerformed(ActionEvent e) {
+			seeTicket();
+			}
+		});
+		formPanel.add(consultar, gbc);
+		
+		// Boton que vuelve al menu anterior
+		JButton backButton = new JButton("Volver atras");
 		backButton.addActionListener(new ActionListener() {
 		// Se llama al metodo irSignUp que cambia la pagina a la de registro
 		public void actionPerformed(ActionEvent e) {
@@ -104,7 +111,7 @@ public class mainUser extends JPanel {
 					insertStatement.setString(2, "Activa"); // Establece el servicio contratado al estado solicitado
 					insertStatement.setString(3, CIF);
 					insertStatement.executeUpdate();
-					JOptionPane.showMessageDialog(this, "Se ha agregado un registro en la tabla contractacio");
+					JOptionPane.showMessageDialog(this, "Se ha añadido un registro en la tabla contractacio");
 
 					irService(e);
 				}
@@ -279,7 +286,139 @@ public class mainUser extends JPanel {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
+	}
+	
+	// Método para visualizar los servicios contratados de un cliente específico
+	private void seeTicket() {
+	    String userClient = JOptionPane.showInputDialog(null, "Escriba su nombre de usuario");
+	    if (userClient == null || userClient.trim().isEmpty()) {
+	        JOptionPane.showMessageDialog(null, "El nombre de usuario no puede estar vacío.");
+	        return;
+	    }
 
+	    String queryCIF = "SELECT CIF FROM CLIENT WHERE IDUSU = ?";
+	    try (PreparedStatement stmtUser = con.prepareStatement(queryCIF)) {
+	        stmtUser.setString(1, userClient);
+	        try (ResultSet rsUser = stmtUser.executeQuery()) {
+	            if (!rsUser.next()) {
+	                JOptionPane.showMessageDialog(null, "No se encontró el usuario especificado.");
+	                return;
+	            }
+
+	            String cif = rsUser.getString("CIF");
+	            JFrame frame = new JFrame("Tiquets - Cliente " + cif);
+	            frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+	            frame.setLayout(new BoxLayout(frame.getContentPane(), BoxLayout.Y_AXIS));
+	            frame.setSize(800, 600);
+
+	            // Consultar contratos
+	            String queryContracts = "SELECT NUMC FROM CONTRACTACIO WHERE CIF = ?";
+	            try (PreparedStatement stmtContracts = con.prepareStatement(queryContracts)) {
+	                stmtContracts.setString(1, cif);
+	                try (ResultSet rsContracts = stmtContracts.executeQuery()) {
+	                    boolean hasData = false;
+
+	                    while (rsContracts.next()) {
+	                        hasData = true;
+	                        int numContract = rsContracts.getInt("NUMC");
+
+	                        // Agregar detalles del contrato
+	                        frame.add(new JLabel("=== Contrato: " + numContract + " ==="));
+
+	                        // Consultar servicios contratados para este contrato
+	                        String queryServices = "SELECT NUMS, TIPUS, PREU, PAGAMENT FROM SERV_CONTRACTAT WHERE NUMC = ?";
+	                        try (PreparedStatement stmtServices = con.prepareStatement(queryServices)) {
+	                            stmtServices.setInt(1, numContract);
+	                            try (ResultSet rsServices = stmtServices.executeQuery()) {
+	                                while (rsServices.next()) {
+	                                    // Detalles del servicio
+	                                    int serviceNum = rsServices.getInt("NUMS");
+	                                    String serviceType = rsServices.getString("TIPUS");
+	                                    int price = rsServices.getInt("PREU");
+	                                    String payment = rsServices.getString("PAGAMENT");
+
+	                                    frame.add(new JLabel("\n"));
+	                                    frame.add(new JLabel("  --- Tiquets ---"));
+	                                    frame.add(new JLabel("  Servicio: " + serviceNum));
+	                                    frame.add(new JLabel("  Tipo: " + serviceType));
+	                                    frame.add(new JLabel("  Precio: " + price));
+	                                    frame.add(new JLabel("  Pago: " + payment));
+
+	                                    // Consultar los tiquets para este servicio
+	                                    String queryTickets = "SELECT MESANY, PAGAT FROM REBUT WHERE NUMC = ? AND NUMS = ?";
+	                                    try (PreparedStatement stmtTickets = con.prepareStatement(queryTickets)) {
+	                                        stmtTickets.setInt(1, numContract);
+	                                        stmtTickets.setInt(2, serviceNum);
+	                                        try (ResultSet rsTickets = stmtTickets.executeQuery()) {
+	                                            if (rsTickets.next()) {
+	                                                do {
+	                                                    String paid = rsTickets.getString("PAGAT");
+	                                                    frame.add(new JLabel("  Pagado: " + paid));
+	                                                } while (rsTickets.next());
+	                                            } else {
+	                                                frame.add(new JLabel("    Sin tiquets disponibles."));
+	                                            }
+	                                        }
+	                                    }
+	                                }
+	                            }
+	                        }
+	                    }
+
+	                    if (!hasData) {
+	                        JOptionPane.showMessageDialog(null, "No se encontraron contratos para el cliente.");
+	                        return;
+	                    }
+
+	                    frame.add(new JLabel("\n"));
+	                    // Botón para pagar tiquets
+	                    JButton payButton = new JButton("Pagar Tiquet");
+	                    payButton.addActionListener(e -> pagar());
+	                    frame.add(payButton);
+
+	                    // Mostrar el JFrame
+	                    frame.setVisible(true);
+	                }
+	            }
+	        }
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	        JOptionPane.showMessageDialog(null, "Error al procesar la consulta: " + e.getMessage());
+	    }
+	}
+	
+	//METODO PARA SIMULAR UN PAGO
+	private void pagar() {
+	    // Pedir al usuario el número del servicio a pagar
+	    String numS = JOptionPane.showInputDialog(null, "Indica el servicio a pagar");
+	    
+	    // Validar que el usuario haya introducido un valor
+	    if (numS == null || numS.trim().isEmpty()) {
+	        JOptionPane.showMessageDialog(null, "Debe introducir un número de servicio válido");
+	        return;
+	    }
+	    
+	    // Consulta SQL corregida
+	    String updLinea = "UPDATE REBUT SET PAGAT = 'S' WHERE NUMS = ? AND PAGAT = 'N'"; // Actualizar la fila especificada
+	    
+	    try (PreparedStatement updStatement = con.prepareStatement(updLinea)) {
+	        // Establecer el parámetro en la consulta
+	        updStatement.setString(1, numS);
+	        
+	        // Ejecutar la actualización
+	        int rowsUpdated = updStatement.executeUpdate(); // Retorna el número de filas afectadas
+	        
+	        // Comprobar si se actualizó alguna fila
+	        if (rowsUpdated > 0) {
+	            JOptionPane.showMessageDialog(null, "Línea actualizada con éxito");
+	        } else {
+	            JOptionPane.showMessageDialog(null, "No se encontraron tiquets para los datos introducidos");
+	        }
+	    } catch (SQLException e) {
+	        // Manejar posibles errores de SQL
+	        e.printStackTrace();
+	        JOptionPane.showMessageDialog(null, "Ocurrió un error al intentar actualizar los datos: " + e.getMessage());
+	    }
 	}
 
 	private void updFecha(int numC, int numS) {
@@ -345,5 +484,4 @@ public class mainUser extends JPanel {
 			JOptionPane.showMessageDialog(null, "Error al obtener la fecha de finalización actual.");
 		}
 	}
-
 }
