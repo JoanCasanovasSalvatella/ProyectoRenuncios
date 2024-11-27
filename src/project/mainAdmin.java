@@ -696,7 +696,7 @@ public class mainAdmin extends JPanel {
 	public void irService(ActionEvent e) {
 		JFrame marco = (JFrame) SwingUtilities.getWindowAncestor(this);
 		marco.remove(this);
-		marco.getContentPane().add(new addServicio());
+		marco.getContentPane().add(new addServicioAdmin());
 		marco.setVisible(true);
 	}
 
