@@ -292,7 +292,7 @@ public class addServicioAdmin extends JPanel {
 	public void volver() {
 		JFrame marco = (JFrame) SwingUtilities.getWindowAncestor(this);
 		marco.remove(this);
-		marco.getContentPane().add(new login());
+		marco.getContentPane().add(new loginAdmin());
 		marco.setVisible(true);
 	}
 
@@ -300,7 +300,7 @@ public class addServicioAdmin extends JPanel {
 	public void ticket() {
 		JFrame marco = (JFrame) SwingUtilities.getWindowAncestor(this);
 		marco.remove(this);
-		marco.getContentPane().add(new showTiquet());
+		marco.getContentPane().add(new showTiquetAdmin());
 		marco.setVisible(true);
 	}
 

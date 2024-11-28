@@ -659,6 +659,12 @@ public class mainAdmin extends JPanel {
 
 		// Añadir el boton de pago
 		JButton tiquet = new JButton("Pagar tiquet");
+		tiquet.addActionListener(new ActionListener() {
+			// Se llama al metodo irSignUp que cambia la pagina a la de registro
+			public void actionPerformed(ActionEvent e) {
+				pagar();
+			}
+		});
 		panelTiquet.add(tiquet);
 
 		// Show results in a single JFrame

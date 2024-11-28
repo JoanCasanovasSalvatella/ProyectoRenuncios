@@ -84,7 +84,7 @@ public class mainUser extends JPanel {
 		formPanel.add(consultar, gbc);
 		
 		// Boton que vuelve al menu anterior
-		JButton backButton = new JButton("Volver atras");
+		JButton backButton = new JButton("Cerrar Sesion");
 		backButton.addActionListener(new ActionListener() {
 		// Se llama al metodo irSignUp que cambia la pagina a la de registro
 		public void actionPerformed(ActionEvent e) {
