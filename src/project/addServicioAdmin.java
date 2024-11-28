@@ -95,9 +95,7 @@ public class addServicioAdmin extends JPanel {
 					selectedServiceType = selectedService;
 
 					System.out.println("Selected Service: " + selectedService + ", Service ID: " + serviceID);// **DEBUG,
-																												// SE
-																												// PUEDE
-																												// BORRAR**
+																						// BORRAR**
 					idServicio = serviceID; // Almacenar el id del servicio
 				}
 

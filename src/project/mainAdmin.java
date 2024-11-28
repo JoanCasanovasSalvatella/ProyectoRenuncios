@@ -49,7 +49,7 @@ public class mainAdmin extends JPanel {
 		// Crear un panel para el formulario
 		JPanel formPanel = new JPanel();
 		formPanel.setLayout(new GridBagLayout()); // Utilizar GridBagLayout para centrar los elementos
-
+		formPanel.setBackground(Color.cyan); // Establece el color de fondo del panel como cian
 		add(formPanel, BorderLayout.CENTER);
 
 		GridBagConstraints gbc = new GridBagConstraints();
@@ -57,6 +57,15 @@ public class mainAdmin extends JPanel {
 		gbc.gridx = 0;
 		gbc.gridy = GridBagConstraints.RELATIVE; // Configurar el layout del formulario
 		gbc.fill = GridBagConstraints.HORIZONTAL; // Ocupa toda la fila horizontalmente
+		
+		// Logo de la empresa
+        ImageIcon imagenFondo = new ImageIcon("media/logoRenuncios.png"); // Crea un nuevo ImageIcon cargando una imagen desde la ubicación especificada en el sistema de archivos
+        JLabel FondoMapa = new JLabel(); // Crea un nuevo JLabel para mostrar el fondo del mapa
+        FondoMapa.setIcon(imagenFondo); // Establece el ImageIcon creado anteriormente como icono del JLabel para mostrar la imagen de fondo
+        int anchoMapa = imagenFondo.getIconWidth(); // Obtiene el ancho de la imagen de fondo
+        int altoMapa = imagenFondo.getIconHeight(); // Obtiene el alto de la imagen de fondo
+        FondoMapa.setBounds(490, 50, anchoMapa, altoMapa); // Establece la posición y el tamaño del JLabel para que coincida con las dimensiones de la imagen de fondo
+        formPanel.add(FondoMapa, gbc);
 
 		JButton addLocation = new JButton("Añadir una localizacion");
 		addLocation.addActionListener(new ActionListener() {

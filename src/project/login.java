@@ -23,8 +23,7 @@ public class login extends JPanel implements ActionListener {
 		}
 
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize(); // Obtener el tamaño de la pantalla
-		setPreferredSize(new Dimension(screenSize.width, screenSize.height)); // Establecer el tamaño preferido del
-																				// panel
+		setPreferredSize(new Dimension(screenSize.width, screenSize.height)); // Establecer el tamaño preferido del																	// panel
 
 		setLayout(new BorderLayout()); // Configurar el layout del panel
 
@@ -45,6 +44,13 @@ public class login extends JPanel implements ActionListener {
 		gbc.fill = GridBagConstraints.HORIZONTAL; // Ocupa toda la fila horizontalmente
 
 		// Logo de la empresa
+        ImageIcon imagenFondo = new ImageIcon("media/logoRenuncios.png"); // Crea un nuevo ImageIcon cargando una imagen desde la ubicación especificada en el sistema de archivos
+        JLabel FondoMapa = new JLabel(); // Crea un nuevo JLabel para mostrar el fondo del mapa
+        FondoMapa.setIcon(imagenFondo); // Establece el ImageIcon creado anteriormente como icono del JLabel para mostrar la imagen de fondo
+        int anchoMapa = imagenFondo.getIconWidth(); // Obtiene el ancho de la imagen de fondo
+        int altoMapa = imagenFondo.getIconHeight(); // Obtiene el alto de la imagen de fondo
+        FondoMapa.setBounds(490, 50, anchoMapa, altoMapa); // Establece la posición y el tamaño del JLabel para que coincida con las dimensiones de la imagen de fondo
+        formPanel.add(FondoMapa, gbc);
 
 		// Boton para ir al login si el usuario es administrador
 		JButton signUpADM = new JButton("Soy un administrador");
